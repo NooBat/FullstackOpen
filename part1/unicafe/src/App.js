@@ -18,7 +18,7 @@ const StatisticLine = ( {text, value} ) => {
 const Statistics = ({ good, neutral, bad }) => {
   let all = good + neutral + bad
 
-  if (all f=== 0) {
+  if (all === 0) {
     return (
       <div>
         <h2>statistics</h2>
