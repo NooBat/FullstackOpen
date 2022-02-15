@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import Contact from "./components/Contact";
+import Persons from "./components/Persons";
 import PersonForm from "./components/PersonForm";
+import Filter from "./components/Filter";
 
 const App = () => {
   const [persons, setPersons] = useState([
@@ -20,10 +21,6 @@ const App = () => {
   const [showAll, setShowAll] = useState(true);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
-
-  const contactToShow = showAll 
-    ? persons
-    : persons.filter(person => person.show)
 
   const addPerson = (event) => {
     event.preventDefault();
@@ -45,17 +42,29 @@ const App = () => {
 
   const handleFilter = (event) => {
     if (event.target.value.length === 0) {
-      setPersons(contactToShow.map((person) => person.show = true))
+      setShowAll(true);
+      setPersons(
+        persons.map((person) => {
+          person.show = true;
+          return person;
+        })
+      );
     } else {
-      setShowAll(false)
-      setPersons(contactToShow.map((person) => {
-        if (person.name.toLowerCase().indexOf(event.target.value) > -1) {
-          person.show = true
-        } else {
-          person.show = false
-        }
-        return person
-      }))
+      setShowAll(false);
+      setPersons(
+        persons.map((person) => {
+          if (
+            person.name
+              .toLowerCase()
+              .indexOf(event.target.value.toLowerCase()) !== -1
+          ) {
+            person.show = true;
+          } else {
+            person.show = false;
+          }
+          return person;
+        })
+      );
     }
   };
 
@@ -70,9 +79,9 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <div>
-        filter shown with <input onChange={handleFilter} />
-      </div>
+
+      <Filter handleFilter={handleFilter} />
+
       <h2>add a new</h2>
       <PersonForm
         addPerson={addPerson}
@@ -83,7 +92,9 @@ const App = () => {
       />
 
       <h2>Numbers</h2>
-      <Contact contacts={contactToShow} />
+      <Persons
+        persons={showAll ? persons : persons.filter((person) => person.show)}
+      />
     </div>
   );
 };
