@@ -3,10 +3,6 @@ import axios from "axios";
 import Country from "./components/Country";
 
 const App = () => {
-  const API_KEY = process.env.REACT_APP_API_KEY;
-
-  console.log(API_KEY);
-
   const [countries, setCountries] = useState([]);
   const [showCountries, setShowCountries] = useState(true);
 

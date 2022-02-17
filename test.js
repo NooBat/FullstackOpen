@@ -1,4 +1,3 @@
-const obj = {"languages":{"fra":"French","kon":"Kikongo","lin":"Lingala","lua":"Tshiluba","swa":"Swahili"}}
-let a = []
+const time = new Date()
 
-console.log(Object.entries(obj.languages))
+console.log(time.getTimezoneOffset());
