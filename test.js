@@ -1,4 +1,4 @@
-let s1 = 'arto'
-let s2 = 'ArTo'
+const obj = {"languages":{"fra":"French","kon":"Kikongo","lin":"Lingala","lua":"Tshiluba","swa":"Swahili"}}
+let a = []
 
-console.log(s1.toLowerCase() === s2.toLowerCase());
+console.log(Object.entries(obj.languages))
