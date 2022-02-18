@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import Persons from "./components/Persons";
+import Person from "./components/Person";
 import PersonForm from "./components/PersonForm";
 import Filter from "./components/Filter";
+import formService from "./services/form";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -10,31 +10,47 @@ const App = () => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
 
+  const personToShow = showAll
+    ? persons
+    : persons.filter((person) => person.visible);
+
   useEffect(() => {
-    axios
-      .get("http://localhost:3001/persons")
+    formService
+      .getAll()
       .then((response) => {
-        console.log(response.data)
+        console.log(response);
         setPersons(response.data);
+      })
+      .catch((err) => {
+        alert(err + " was catched while executing getAll()");
       });
   }, []);
 
+  console.log(persons);
+
   const addPerson = (event) => {
     event.preventDefault();
-
     if (persons.findIndex((person) => person.name === newName) > -1) {
       window.alert(`${newName} is already added to phonebook`);
     } else {
+      const id = persons[persons.length - 1].id + 1;
       const newPerson = {
+        id: id,
         name: newName,
         number: newNumber,
         visible: true,
-        id: persons[persons.length - 1].id + 1,
       };
-      setPersons(persons.concat(newPerson));
+      formService
+        .createContact(newPerson)
+        .then((response) => {
+          setPersons(persons.concat(response.data));
+          setNewName("");
+          setNewNumber("");
+        })
+        .catch((err) => {
+          alert(err + " was catched while executing createContact()");
+        });
     }
-    setNewName("");
-    setNewNumber("");
   };
 
   const handleFilter = (event) => {
@@ -89,9 +105,11 @@ const App = () => {
       />
 
       <h2>Numbers</h2>
-      <Persons
-        persons={showAll ? persons : persons.filter((person) => person.show)}
-      />
+      <div>
+        {personToShow.map((person) => (
+          <Person person={person} key={person.id} />
+        ))}
+      </div>
     </div>
   );
 };
