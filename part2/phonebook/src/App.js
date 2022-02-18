@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
+import Filter from "./components/Filter";
+import Notification from "./components/Notification";
 import Person from "./components/Person";
 import PersonForm from "./components/PersonForm";
-import Filter from "./components/Filter";
 import formService from "./services/persons";
 
 const App = () => {
@@ -9,6 +10,8 @@ const App = () => {
   const [showAll, setShowAll] = useState(true);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
+  const [message, setMessage] = useState("");
+  const [typeOfNotification, setTypeOfNotification] = useState("")
 
   const personToShow = showAll
     ? persons
@@ -21,17 +24,24 @@ const App = () => {
         setPersons(response);
       })
       .catch((err) => {
-        alert(err + " was catched while executing getAll()");
+        setMessage("Information not found")
+        setTypeOfNotification("error")
       });
+    setTimeout(() => {
+      setMessage("")
+      setTypeOfNotification("")
+    }, 5000)
   }, []);
 
   const addPerson = (event) => {
     event.preventDefault();
     if (persons.findIndex((person) => (person.name === newName) && (person.number === newNumber)) > -1) {
-      window.alert(`${newName} is already added to phonebook`);
+      setMessage(`${newName} is already added to phonebook`);
+      setTypeOfNotification("error")
     } else if (persons.findIndex((person) => person.name === newName) > -1) {
       if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
         const person = persons[persons.findIndex((person) => person.name === newName)]
+        const oldNumber = person.number
 
         const updatedPerson = {
           ...person,
@@ -42,6 +52,14 @@ const App = () => {
           .updateContact(person.id, updatedPerson)
           .then(response => {
             setPersons(persons.map((p) => p.id === person.id ? response : p))
+            setMessage(`Changed ${response.name}'s from ${oldNumber} to ${response.number}`);
+            setTypeOfNotification("notification")
+            setNewName("");
+            setNewNumber("");
+          })
+          .catch(err => {
+            setMessage(`Cannot change ${person.name}'s from ${oldNumber} to ${newNumber} because of ${err}`);
+            setTypeOfNotification("error")
           })
       }
     } else {
@@ -58,11 +76,18 @@ const App = () => {
           setPersons(persons.concat(response));
           setNewName("");
           setNewNumber("");
+          setMessage(`Added ${response.name} to the phonebook`);
+          setTypeOfNotification("notification")
         })
         .catch((err) => {
-          alert(err + " was catched while executing createContact()");
+          setMessage(`Cannot add ${newName} to the phonebook because of ${err}`);
+          setTypeOfNotification("error")
         });
     }
+    setTimeout(() => {
+      setMessage("")
+      setTypeOfNotification("")
+    }, 5000)
   };
 
   const handleFilter = (event) => {
@@ -93,6 +118,26 @@ const App = () => {
     }
   };
 
+  const deleteContact = (id, name) => {
+    if (window.confirm(`Delete ${name}?`)) {
+      formService
+        .deleteContact(id)
+        .then((response) => {
+          setPersons(persons.filter((person) => person.id !== id));
+          setMessage(`Deleted ${name}`);
+          setTypeOfNotification("notification")
+        })
+        .catch((error) => {
+          setMessage(`Information of ${name} has already been removed from the server`);
+          setTypeOfNotification("error")
+        });
+      setTimeout(() => {
+        setMessage("")
+        setTypeOfNotification("")
+      }, 5000)
+    }
+  };
+
   const handleChangeName = (event) => {
     setNewName(event.target.value);
   };
@@ -101,23 +146,10 @@ const App = () => {
     setNewNumber(event.target.value);
   };
 
-  const deleteContact = (id, name) => {
-    if (window.confirm(`Delete ${name}?`)) {
-      formService
-        .deleteContact(id)
-        .then((response) => {
-          setPersons(persons.filter((person) => person.id !== id));
-        })
-        .catch((error) => {
-          alert(error + " was caught during HTTP DELETE");
-        });
-    }
-  };
-
   return (
     <div>
       <h2>Phonebook</h2>
-
+      <Notification message={ {content: message, style: typeOfNotification} } />
       <div>
         filter shown with <Filter handleFilter={handleFilter} />
       </div>

@@ -1,3 +1,1 @@
-const time = new Date()
-
-console.log(time.getTimezoneOffset());
+console.log(undefined === null)
