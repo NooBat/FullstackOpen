@@ -17,6 +17,11 @@ const updateContact = (id, newContact) => {
   return request.then((response) => response.data);
 };
 
-const formService = { getAll, createContact, updateContact };
+const deleteContact = (id) => {
+  const request = axios.delete(`${baseUrl}/${id}`);
+  return request.then((response) => response.data);
+};
 
-export default formService
+const formService = { getAll, createContact, updateContact, deleteContact };
+
+export default formService;

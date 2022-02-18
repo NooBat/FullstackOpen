@@ -9,7 +9,7 @@ const App = () => {
 
   useEffect(() => {
     noteService.getAll().then((response) => {
-      setNotes(response.data);
+      setNotes(response);
     });
   }, []);
 
