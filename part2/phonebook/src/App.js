@@ -11,11 +11,11 @@ const App = () => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [message, setMessage] = useState("");
-  const [typeOfNotification, setTypeOfNotification] = useState("")
+  const [typeOfNotification, setTypeOfNotification] = useState("");
 
   const personToShow = showAll
     ? persons
-    : persons.filter((person) => person.visible);
+    : persons.filter((person) => person.show);
 
   useEffect(() => {
     formService
@@ -24,46 +24,59 @@ const App = () => {
         setPersons(response);
       })
       .catch((err) => {
-        setMessage("Information not found")
-        setTypeOfNotification("error")
+        setMessage("Information not found");
+        setTypeOfNotification("error");
       });
     setTimeout(() => {
-      setMessage("")
-      setTypeOfNotification("")
-    }, 5000)
+      setMessage("");
+      setTypeOfNotification("");
+    }, 5000);
   }, []);
 
   const addPerson = (event) => {
     event.preventDefault();
-    if (persons.findIndex((person) => (person.name === newName) && (person.number === newNumber)) > -1) {
+    if (
+      persons.findIndex(
+        (person) => person.name === newName && person.number === newNumber
+      ) > -1
+    ) {
       setMessage(`${newName} is already added to phonebook`);
-      setTypeOfNotification("error")
+      setTypeOfNotification("error");
     } else if (persons.findIndex((person) => person.name === newName) > -1) {
-      if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
-        const person = persons[persons.findIndex((person) => person.name === newName)]
-        const oldNumber = person.number
+      if (
+        window.confirm(
+          `${newName} is already added to phonebook, replace the old number with a new one?`
+        )
+      ) {
+        const person =
+          persons[persons.findIndex((person) => person.name === newName)];
+        const oldNumber = person.number;
 
         const updatedPerson = {
           ...person,
-          number: newNumber
-        }
+          number: newNumber,
+        };
 
         formService
           .updateContact(person.id, updatedPerson)
-          .then(response => {
-            setPersons(persons.map((p) => p.id === person.id ? response : p))
-            setMessage(`Changed ${response.name}'s from ${oldNumber} to ${response.number}`);
-            setTypeOfNotification("notification")
+          .then((response) => {
+            setPersons(persons.map((p) => (p.id === person.id ? response : p)));
+            setMessage(
+              `Changed ${response.name}'s from ${oldNumber} to ${response.number}`
+            );
+            setTypeOfNotification("notification");
             setNewName("");
             setNewNumber("");
           })
-          .catch(err => {
-            setMessage(`Cannot change ${person.name}'s from ${oldNumber} to ${newNumber} because of ${err}`);
-            setTypeOfNotification("error")
-          })
+          .catch((err) => {
+            setMessage(
+              `Cannot change ${person.name}'s from ${oldNumber} to ${newNumber} because of ${err}`
+            );
+            setTypeOfNotification("error");
+          });
       }
     } else {
-      const id = persons[persons.length - 1].id + 1;
+      const id = Math.max(...persons.map(person => person.id)) + 1;
       const newPerson = {
         id: id,
         name: newName,
@@ -77,17 +90,19 @@ const App = () => {
           setNewName("");
           setNewNumber("");
           setMessage(`Added ${response.name} to the phonebook`);
-          setTypeOfNotification("notification")
+          setTypeOfNotification("notification");
         })
         .catch((err) => {
-          setMessage(`Cannot add ${newName} to the phonebook because of ${err}`);
-          setTypeOfNotification("error")
+          setMessage(
+            `Cannot add ${newName} to the phonebook because of ${err}`
+          );
+          setTypeOfNotification("error");
         });
     }
     setTimeout(() => {
-      setMessage("")
-      setTypeOfNotification("")
-    }, 5000)
+      setMessage("");
+      setTypeOfNotification("");
+    }, 5000);
   };
 
   const handleFilter = (event) => {
@@ -125,16 +140,18 @@ const App = () => {
         .then((response) => {
           setPersons(persons.filter((person) => person.id !== id));
           setMessage(`Deleted ${name}`);
-          setTypeOfNotification("notification")
+          setTypeOfNotification("notification");
         })
         .catch((error) => {
-          setMessage(`Information of ${name} has already been removed from the server`);
-          setTypeOfNotification("error")
+          setMessage(
+            `Information of ${name} has already been removed from the server`
+          );
+          setTypeOfNotification("error");
         });
       setTimeout(() => {
-        setMessage("")
-        setTypeOfNotification("")
-      }, 5000)
+        setMessage("");
+        setTypeOfNotification("");
+      }, 5000);
     }
   };
 
@@ -149,7 +166,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={ {content: message, style: typeOfNotification} } />
+      <Notification message={{ content: message, style: typeOfNotification }} />
       <div>
         filter shown with <Filter handleFilter={handleFilter} />
       </div>
