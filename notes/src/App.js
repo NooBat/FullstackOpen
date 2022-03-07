@@ -21,7 +21,7 @@ const App = () => {
     const changedNote = { ...note, important: !note.important };
 
     noteService.update(id, changedNote).then((response) => {
-      setNotes(notes.map((note) => (note.id === id ? response.data : note)));
+      setNotes(notes.map((note) => (note.id === id ? response : note)));
     })
       .catch(error => {
         setErrorMessage(`the note '${note.content}' was already deleted from server`)
@@ -35,11 +35,11 @@ const App = () => {
       content: newNote,
       date: new Date().toISOString(),
       important: Math.random() > 0.5,
-      id: notes.length + 1,
+      id: Math.max(...notes.map(n => n.id)) + 1,
     };
 
     noteService.create(noteObject).then((response) => {
-      setNotes(notes.concat(response.data));
+      setNotes(notes.concat(response));
       setNewNote("");
     });
   };
