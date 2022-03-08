@@ -35,25 +35,19 @@ const App = () => {
 
   const addPerson = (event) => {
     event.preventDefault();
-    if (
-      persons.findIndex(
-        (person) => person.name === newName && person.number === newNumber
-      ) > -1
-    ) {
-      setMessage(`${newName} is already added to phonebook`);
-      setTypeOfNotification("error");
-    } else if (persons.findIndex((person) => person.name === newName) > -1) {
+    if (persons.findIndex((person) => person.name === newName && person.number !== newNumber) > -1) {
       if (
         window.confirm(
           `${newName} is already added to phonebook, replace the old number with a new one?`
         )
       ) {
         const person =
-          persons[persons.findIndex((person) => person.name === newName)];
+          persons[persons.findIndex((person) => person.name === newName && person.number !== newNumber)];
+
         const oldNumber = person.number;
 
         const updatedPerson = {
-          ...person,
+          name: person.name,
           number: newNumber,
         };
 
@@ -68,20 +62,15 @@ const App = () => {
             setNewName("");
             setNewNumber("");
           })
-          .catch((err) => {
-            setMessage(
-              `Cannot change ${person.name}'s from ${oldNumber} to ${newNumber} because of ${err}`
-            );
+          .catch((error) => {
+            setMessage(error.response.data.error);
             setTypeOfNotification("error");
           });
       }
     } else {
-      const id = Math.max(...persons.map(person => person.id)) + 1;
       const newPerson = {
-        id: id,
         name: newName,
         number: newNumber,
-        visible: true,
       };
       formService
         .createContact(newPerson)
@@ -92,9 +81,9 @@ const App = () => {
           setMessage(`Added ${response.name} to the phonebook`);
           setTypeOfNotification("notification");
         })
-        .catch((err) => {
+        .catch((error) => {
           setMessage(
-            `Cannot add ${newName} to the phonebook because of ${err}`
+            `Cannot add ${newName} to the phonebook because of ${error.response.data.error}`
           );
           setTypeOfNotification("error");
         });
@@ -102,7 +91,7 @@ const App = () => {
     setTimeout(() => {
       setMessage("");
       setTypeOfNotification("");
-    }, 5000);
+    }, 10000);
   };
 
   const handleFilter = (event) => {

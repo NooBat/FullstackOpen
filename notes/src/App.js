@@ -35,7 +35,6 @@ const App = () => {
       content: newNote,
       date: new Date().toISOString(),
       important: Math.random() > 0.5,
-      id: Math.max(...notes.map(n => n.id)) + 1,
     };
 
     noteService.create(noteObject).then((response) => {
