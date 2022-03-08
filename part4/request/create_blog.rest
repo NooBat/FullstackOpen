@@ -1,0 +1,9 @@
+POST http://localhost:3003/api/blogs
+content-type: application/json
+
+{
+  "title": "Stop Trying to Be Happy",
+  "author": "Mark Manson",
+  "url": "https://markmanson.net/stop-trying-to-be-happy#.h4omlt:rFDy",
+  "likes": 2000
+}

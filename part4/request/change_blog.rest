@@ -1,0 +1,9 @@
+PUT http://localhost:3003/api/blogs/62277a0cdc52bd0644d19623
+content-type: application/json
+
+{
+  "title": "Don't Shave That Yak!",
+  "author": "Seth Godin",
+  "url": "https://seths.blog/2005/03/dont_shave_that/",
+  "likes": 2500
+}
