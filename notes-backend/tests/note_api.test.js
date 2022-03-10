@@ -114,7 +114,24 @@ describe('addition of a new note', () => {
 });
 
 describe('deletion of a note', () => {
-  test('succeeds ');
+  test('succeeds with status code 204 if id is valid', async () => {
+    const notesAtStart = await helper.notesInDb();
+    const noteToDelete = notesAtStart[0];
+
+    await api
+      .delete(`/api/notes/${noteToDelete.id}`)
+      .expect(204);
+
+    const notesAtEnd = await helper.notesInDb();
+
+    expect(notesAtEnd).toHaveLength(
+      helper.initialNotes.length - 1,
+    );
+
+    const contents = notesAtEnd.map((note) => note.content);
+
+    expect(contents).not.toContain(noteToDelete.content);
+  });
 });
 
 afterAll(() => {
