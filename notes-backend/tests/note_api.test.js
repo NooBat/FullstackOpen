@@ -55,42 +55,66 @@ describe('viewing a specific note', () => {
 
     expect(resultNote.body).toEqual(processedNoteToView);
   });
+
+  test('fails with status code 404 if note does note exist', async () => {
+    const validNoneExistingId = await helper.nonExistingId();
+
+    console.log(validNoneExistingId);
+
+    await api
+      .get(`/api/notes/${validNoneExistingId}`)
+      .expect(404);
+  });
+
+  test('fails with status code 400 if id is invalid', async () => {
+    const invalidId = '5a3d5da59070081a82a3445';
+
+    await api
+      .get(`/api/notes/${invalidId}`)
+      .expect(400);
+  });
 });
 
-test('a valid note can be added', async () => {
-  const newNote = {
-    content: 'async/await simplifies making async calls',
-    important: true,
-  };
+describe('addition of a new note', () => {
+  test('succeeds with valid data', async () => {
+    const newNote = {
+      content: 'async/await simplifies making async calls',
+      important: true,
+    };
 
-  await api
-    .post('/api/notes')
-    .send(newNote)
-    .expect(201)
-    .expect('Content-Type', 'application/json; charset=utf-8');
+    await api
+      .post('/api/notes')
+      .send(newNote)
+      .expect(201)
+      .expect('Content-Type', /application\/json/);
 
-  const notesAtEnd = await helper.notesInDb();
-  expect(notesAtEnd).toHaveLength(helper.initialNotes.length + 1);
+    const notesAtEnd = await helper.notesInDb();
+    expect(notesAtEnd).toHaveLength(helper.initialNotes.length + 1);
 
-  const contents = notesAtEnd.map((note) => note.content);
-  expect(contents).toContain(
-    'async/await simplifies making async calls',
-  );
+    const contents = notesAtEnd.map((note) => note.content);
+    expect(contents).toContain(
+      'async/await simplifies making async calls',
+    );
+  });
+
+  test('fails with status code 400 if data invalid', async () => {
+    const newNote = {
+      important: true,
+    };
+
+    await api
+      .post('/api/notes')
+      .send(newNote)
+      .expect(400);
+
+    const notesAtEnd = await helper.notesInDb();
+
+    expect(notesAtEnd).toHaveLength(helper.initialNotes.length);
+  });
 });
 
-test('note without content is not added', async () => {
-  const newNote = {
-    important: true,
-  };
-
-  await api
-    .post('/api/notes')
-    .send(newNote)
-    .expect(400);
-
-  const notesAtEnd = await helper.notesInDb();
-
-  expect(notesAtEnd).toHaveLength(helper.initialNotes.length);
+describe('deletion of a note', () => {
+  test('succeeds ');
 });
 
 afterAll(() => {
