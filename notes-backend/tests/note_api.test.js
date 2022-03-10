@@ -8,34 +8,53 @@ const api = supertest(app);
 
 beforeEach(async () => {
   await Note.deleteMany({});
-
-  const noteObjects = helper.initialNotes
-    .map((note) => new Note(note));
-  const promiseArray = noteObjects.map((note) => note.save());
-  await Promise.all(promiseArray);
+  await Note.insertMany(helper.initialNotes);
 });
 
-test('notes are returned as json', async () => {
-  await api
-    .get('/api/notes')
-    .expect(200)
-    .expect('Content-Type', 'application/json; charset=utf-8');
+describe('when there is initially some notes saved', () => {
+  test('notes are returned as json', async () => {
+    await api
+      .get('/api/notes')
+      .expect(200)
+      .expect('Content-Type', 'application/json; charset=utf-8');
+  });
+
+  test('all notes are returned', async () => {
+    const response = await api.get('/api/notes');
+
+    expect(response.body).toHaveLength(helper.initialNotes.length);
+  });
+
+  test('a specific note is within the returned notes', async () => {
+    const response = await api.get('/api/notes');
+
+    const contents = response.body.map((r) => r.content);
+
+    expect(contents).toContain(
+      'Browser can execute only Javascript',
+    );
+  });
 });
 
-test('all notes are returned', async () => {
-  const response = await api.get('/api/notes');
+describe('viewing a specific note', () => {
+  test('succeeds with a valid id', async () => {
+    const notesAtStart = await helper.notesInDb();
 
-  expect(response.body).toHaveLength(helper.initialNotes.length);
-});
+    const noteToView = notesAtStart[0];
 
-test('a specific note is within the returned notes', async () => {
-  const response = await api.get('/api/notes');
+    const resultNote = await api
+      .get(`/api/notes/${noteToView.id}`)
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
 
-  const contents = response.body.map((r) => r.content);
+    console.log(resultNote);
+    console.log(noteToView);
 
-  expect(contents).toContain(
-    'Browser can execute only Javascript',
-  );
+    const processedNoteToView = JSON.parse(JSON.stringify(noteToView));
+    console.log(processedNoteToView);
+
+    expect(resultNote.body).toEqual(processedNoteToView);
+  });
 });
 
 test('a valid note can be added', async () => {
