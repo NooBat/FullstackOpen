@@ -1,1 +1,3 @@
-console.log(undefined === null)
+const important = undefined;
+
+console.log(important || true)
