@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const supertest = require('supertest');
+
 const app = require('../app');
 const Blog = require('../models/blog');
 const helper = require('./test_helper');
@@ -11,174 +12,170 @@ beforeEach(async () => {
   await Blog.insertMany(helper.initialBlogs);
 });
 
-describe('when there is initially some blogs saved', () => {
-  test('blogs are returned as json', async () => {
+describe('when there are some blogs in the database', () => {
+  test('all blogs are returned in JSON format', async () => {
     await api
       .get('/api/blogs')
       .expect(200)
-      .expect('Content-Type', 'application/json; charset=utf-8');
+      .expect('Content-Type', /application\/json/);
   });
 
   test('all blogs are returned', async () => {
-    const response = await api.get('/api/blogs');
-
-    expect(response.body).toHaveLength(helper.initialBlogs.length);
+    const blogsAtStart = await helper.blogsInDb();
+    expect(blogsAtStart).toHaveLength(helper.initialBlogs.length);
   });
 
-  test('all blogs have an "id" property instead of "_id"', async () => {
-    const response = await api.get('/api/blogs');
-    expect(response.body[0].id).toBeDefined();
-    expect(response.body[0]._id).not.toBeDefined();
+  test("all blogs have 'id' attribute, not '_id' attribute", async () => {
+    const blogsAtStart = await helper.blogsInDb();
+
+    blogsAtStart.forEach((blog) => {
+      expect(blog.id).toBeDefined();
+      expect(blog._id).not.toBeDefined();
+    });
   });
 });
 
 describe('addition of a new blog', () => {
-  test('a valid blog can be added', async () => {
+  test('sucess with valid data', async () => {
     const newBlog = {
-      title: 'TDD harms architecture',
-      author: 'Robert C. Martin',
-      url: 'http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html',
-      likes: 0,
+      title: 'Five mistakes you make with React',
+      author: 'Daniel Kadavra',
+      url: 'https://fullstackopen.com/en/part4/testing_the_backend#more-tests-and-refactoring-the-backend',
+      likes: 8,
     };
 
     await api
       .post('/api/blogs')
       .send(newBlog)
       .expect(201)
-      .expect('Content-Type', 'application/json; charset=utf-8');
+      .expect('Content-Type', /application\/json/);
 
-    const blogs = await helper.blogsInDb();
-    expect(blogs.length).toBe(helper.initialBlogs.length + 1);
+    const blogsAtEnd = await helper.blogsInDb();
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1);
 
-    const urls = blogs.map((blog) => blog.url);
-
-    expect(urls).toContain(
-      'http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html',
-    );
+    const titles = blogsAtEnd.map((blog) => blog.title);
+    expect(titles).toContain('Five mistakes you make with React');
   });
 
-  test('a blog without "likes" property will be default to 0', async () => {
-    const newBlog = {
-      title: 'TDD harms architecture',
-      author: 'Robert C. Martin',
-      url: 'http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html',
+  test("sending a blog without 'likes' attribute default it to 0", async () => {
+    const withoutLikesBlog = {
+      title: 'Five mistakes you make with React',
+      author: 'Daniel Kadavra',
+      url: 'https://fullstackopen.com/en/part4/testing_the_backend#more-tests-and-refactoring-the-backend',
     };
 
     await api
       .post('/api/blogs')
-      .send(newBlog)
+      .send(withoutLikesBlog)
       .expect(201)
-      .expect('Content-Type', 'application/json; charset=utf-8');
+      .expect('Content-Type', /application\/json/);
 
-    const blogs = await helper.blogsInDb();
-    expect(blogs.length).toBe(helper.initialBlogs.length + 1);
+    const blogsAtEnd = await helper.blogsInDb();
+    const requestedBlog = blogsAtEnd.find(
+      (blog) => blog.title === withoutLikesBlog.title
+    );
 
-    const removeId = blogs.map((blog) => {
-      const removeIdBlog = {
-        author: blog.author,
-        title: blog.title,
-        likes: blog.likes,
-        url: blog.url,
-      };
-      return removeIdBlog;
-    });
-    expect(removeId).toContainEqual(
+    expect(requestedBlog.likes).toBe(0);
+  });
+
+  test("a blog without 'title' or 'url' attributes will not be sent and result in 400 Bad Request", async () => {
+    const erroneousBlogs = [
       {
-        title: 'TDD harms architecture',
-        author: 'Robert C. Martin',
-        url: 'http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html',
-        likes: 0,
+        author: 'Daniel Kadavra',
+        url: 'https://fullstackopen.com/en/part4/testing_the_backend#more-tests-and-refactoring-the-backend',
       },
-    );
+      {
+        title: 'Five mistakes you make with React',
+        author: 'Daniel Kadavra',
+      },
+      {
+        author: 'Daniel Kadavra',
+      },
+    ];
+
+    for (const blog of erroneousBlogs) {
+      await api.post('/api/blogs').send(blog).expect(400);
+    }
+
+    const blogsAtEnd = await helper.blogsInDb();
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length);
   });
+}, 10000);
 
-  test('a blog without "title" or "url" property will result in 400 Bad Request', async () => {
-    const faultyBlog = {
-      author: 'Robert C. Martin',
-    };
-
-    await api
-      .post('/api/blogs')
-      .send(faultyBlog)
-      .expect(400);
-
-    const blogs = await helper.blogsInDb();
-    expect(blogs.length).toBe(helper.initialBlogs.length);
-  });
-});
-
-describe('deletion of a blog', () => {
+describe('deleting a blog', () => {
   test('succeeds with status code 204 if id is valid', async () => {
     const blogsAtStart = await helper.blogsInDb();
-
     const blogToDelete = blogsAtStart[0];
 
-    await api
-      .delete(`/api/blogs/${blogToDelete.id}`)
-      .expect(204);
+    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
 
     const blogsAtEnd = await helper.blogsInDb();
-
     expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length - 1);
 
-    const blogs = blogsAtEnd.map((blog) => {
-      const newBlog = {
-        author: blog.author,
-        title: blog.title,
-        url: blog.url,
-        likes: blog.likes,
-      };
-
-      return newBlog;
-    });
-
-    expect(blogs).not.toContainEqual(helper.initialBlogs[0]);
+    const titles = blogsAtEnd.map((blog) => blog.title);
+    expect(titles).not.toContain(blogToDelete.title);
   });
 });
 
-describe('updating likes of a blog', () => {
-  test('succeeds with status code 200 with the correct format and id', async () => {
+describe('updating a blog', () => {
+  test('succeeds with status code 200 if id and data are valid', async () => {
     const blogsAtStart = await helper.blogsInDb();
+    const blogToUpdate = blogsAtStart[1];
 
-    const blogToUpdate = blogsAtStart[0];
+    console.log(blogToUpdate);
 
-    const newBlog = {
+    const updatedBlog = {
       ...blogToUpdate,
-      likes: blogToUpdate.likes + 100,
+      title: `Updated ${blogToUpdate.title}`,
+      likes: blogToUpdate.likes + 10,
     };
 
-    const response = await api
-      .put(`/api/blogs/${blogToUpdate.id}`)
-      .send(newBlog)
-      .expect(200);
-
-    const updatedBlog = response.body;
+    await api
+      .put(`/api/blogs/${updatedBlog.id}`)
+      .send(updatedBlog)
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
 
     const blogsAtEnd = await helper.blogsInDb();
-
-    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length);
-
-    const blogContent = {
-      author: updatedBlog.author,
-      title: updatedBlog.title,
-      url: updatedBlog.url,
-      likes: updatedBlog.likes,
-    };
-
-    const blogs = blogsAtEnd.map((blog) => {
-      const removeIdBlog = {
-        author: blog.author,
-        title: blog.title,
-        url: blog.url,
-        likes: blog.likes,
-      };
-
-      return removeIdBlog;
-    });
-
-    expect(blogs).toContainEqual(blogContent);
-    expect(blogs).not.toContainEqual(helper.initialBlogs[0]);
+    const titles = blogsAtEnd.map((blog) => blog.title);
+    expect(titles).toContain(updatedBlog.title);
   });
+
+  // test('unsuccessfully with status code 400 if id or data are invalid', async () => {
+  //   const blogsAtStart = await helper.blogsInDb();
+  //   const blogsToUpdate = blogsAtStart.slice(0, 3);
+
+  //   const updatedBlogs = [
+  //     {
+  //       ...blogsToUpdate[0],
+  //       url: 'test',
+  //       likes: blogsToUpdate[0] + 10,
+  //     },
+  //     {
+  //       ...blogsToUpdate[1],
+  //       id: '393993k3331',
+  //       url: 'test',
+  //       likes: blogsToUpdate[1] + 10,
+  //     },
+  //     {
+  //       ...blogsToUpdate[2],
+  //       id: '333,3333',
+  //       title: 2,
+  //     },
+  //   ];
+
+  //   for (const updatedBlog of updatedBlogs) {
+  //     await api
+  //       .put(`/api/blogs/${updatedBlog.id}`)
+  //       .send(updatedBlog)
+  //       .expect(400);
+  //   }
+
+
+  //   const blogsAtEnd = await helper.blogsInDb();
+  //   const urls = blogsAtEnd.map((blog) => blog.url);
+  //   expect(urls).not.toContain('test');
+  // });
 });
 
 afterAll(() => {
