@@ -1,8 +1,10 @@
+const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const supertest = require('supertest');
 
 const app = require('../app');
 const Blog = require('../models/blog');
+const User = require('../models/user');
 const helper = require('./test_helper');
 
 const api = supertest(app);
@@ -13,7 +15,7 @@ beforeEach(async () => {
 });
 
 describe('when there are some blogs in the database', () => {
-  test('all blogs are returned in JSON format', async () => {
+  test("all blogs are returned in JSON format and 'user' field is populated ", async () => {
     await api
       .get('/api/blogs')
       .expect(200)
@@ -122,8 +124,6 @@ describe('updating a blog', () => {
     const blogsAtStart = await helper.blogsInDb();
     const blogToUpdate = blogsAtStart[1];
 
-    console.log(blogToUpdate);
-
     const updatedBlog = {
       ...blogToUpdate,
       title: `Updated ${blogToUpdate.title}`,
@@ -141,41 +141,163 @@ describe('updating a blog', () => {
     expect(titles).toContain(updatedBlog.title);
   });
 
-  // test('unsuccessfully with status code 400 if id or data are invalid', async () => {
-  //   const blogsAtStart = await helper.blogsInDb();
-  //   const blogsToUpdate = blogsAtStart.slice(0, 3);
+  test('unsuccessfully with status code 400 if id or data are invalid', async () => {
+    const blogsAtStart = await helper.blogsInDb();
+    const blogsToUpdate = blogsAtStart.slice(0, 3);
 
-  //   const updatedBlogs = [
-  //     {
-  //       ...blogsToUpdate[0],
-  //       url: 'test',
-  //       likes: blogsToUpdate[0] + 10,
-  //     },
-  //     {
-  //       ...blogsToUpdate[1],
-  //       id: '393993k3331',
-  //       url: 'test',
-  //       likes: blogsToUpdate[1] + 10,
-  //     },
-  //     {
-  //       ...blogsToUpdate[2],
-  //       id: '333,3333',
-  //       title: 2,
-  //     },
-  //   ];
+    const updatedBlogs = [
+      {
+        ...blogsToUpdate[0],
+        url: 'test',
+        likes: blogsToUpdate[0] + 10,
+      },
+      {
+        ...blogsToUpdate[1],
+        id: '393993k3331',
+        url: 'test',
+        likes: blogsToUpdate[1] + 10,
+      },
+      {
+        ...blogsToUpdate[2],
+        id: '333,3333',
+        title: 2,
+      },
+    ];
 
-  //   for (const updatedBlog of updatedBlogs) {
-  //     await api
-  //       .put(`/api/blogs/${updatedBlog.id}`)
-  //       .send(updatedBlog)
-  //       .expect(400);
-  //   }
+    for (const updatedBlog of updatedBlogs) {
+      await api
+        .put(`/api/blogs/${updatedBlog.id}`)
+        .send(updatedBlog)
+        .expect(400);
+    }
 
+    const blogsAtEnd = await helper.blogsInDb();
+    const urls = blogsAtEnd.map((blog) => blog.url);
+    expect(urls).not.toContain('test');
+  });
+});
 
-  //   const blogsAtEnd = await helper.blogsInDb();
-  //   const urls = blogsAtEnd.map((blog) => blog.url);
-  //   expect(urls).not.toContain('test');
-  // });
+describe('when there is initially some users in db', () => {
+  beforeEach(async () => {
+    await User.deleteMany({});
+    const blogsAtStart = await helper.blogsInDb();
+
+    const passwordHash = await bcrypt.hash('secret', 10);
+    const user = new User({
+      username: 'defacto',
+      passwordHash,
+      blogs: [blogsAtStart[3]._id, blogsAtStart[4]._id],
+    });
+
+    await user.save();
+  });
+
+  test('creation succeeds with a fresh username', async () => {
+    const usersAtStart = await helper.usersInDb();
+
+    const newUser = {
+      name: 'Daniel Nguyen',
+      username: 'noobat',
+      password: 'password',
+    };
+
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(201)
+      .expect('Content-Type', /application\/json/);
+
+    const usersAtEnd = await helper.usersInDb();
+    expect(usersAtEnd).toHaveLength(usersAtStart.length + 1);
+
+    const usernames = usersAtEnd.map((user) => user.username);
+    expect(usernames).toContain('noobat');
+  });
+
+  test('creation fails with proper status code and message if username already taken', async () => {
+    const usersAtStart = await helper.usersInDb();
+
+    const newUser = {
+      name: 'Daniel Nguyen',
+      username: 'defacto',
+      password: 'password',
+    };
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/);
+
+    expect(result.body.error).toContain('username must be unique');
+
+    const usersAtEnd = await helper.usersInDb();
+    expect(usersAtEnd).toHaveLength(usersAtStart.length);
+  });
+
+  test('creation fails with proper status code and message if password is invalid', async () => {
+    const usersAtStart = await helper.usersInDb();
+
+    const newUsers = [
+      {
+        name: 'Daniel Nguyen',
+        username: 'noobat',
+        password: 'pw',
+      },
+      {
+        name: 'Daniel Nguyen',
+        username: 'noobat',
+      },
+    ];
+
+    const shortPasswordResult = await api
+      .post('/api/users')
+      .send(newUsers[0])
+      .expect(400)
+      .expect('Content-Type', /application\/json/);
+    expect(shortPasswordResult.body.error).toBe(
+      'password must have minimum length of 3'
+    );
+
+    const undefinedPasswordResult = await api
+      .post('/api/users')
+      .send(newUsers[1])
+      .expect(400)
+      .expect('Content-Type', /application\/json/);
+    expect(undefinedPasswordResult.body.error).toBe(
+      'password must not be empty'
+    );
+
+    const usersAtEnd = await helper.usersInDb();
+    expect(usersAtEnd).toHaveLength(usersAtStart.length);
+  });
+
+  test('creation fails with proper status code and message if username is invalid', async () => {
+    const usersAtStart = await helper.usersInDb();
+
+    const newUsers = [
+      {
+        name: 'Daniel Nguyen',
+        username: 'no',
+        password: '123',
+      },
+      {
+        name: 'Daniel Nguyen',
+        password: '123',
+      },
+    ];
+
+    for (const newUser of newUsers) {
+      await api
+        .post('/api/users')
+        .send(newUser)
+        .expect(400)
+        .expect('Content-Type', /application\/json/);
+    }
+
+    const usersAtEnd = await helper.usersInDb();
+    expect(usersAtEnd).toHaveLength(usersAtStart.length);
+  });
 });
 
 afterAll(() => {

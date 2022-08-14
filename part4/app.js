@@ -8,6 +8,7 @@ const config = require('./utils/config');
 const logger = require('./utils/logger');
 const middleware = require('./utils/middleware');
 const blogsRouter = require('./controllers/blogs');
+const usersRouter = require('./controllers/users');
 
 logger.info('connecting to:', config.MONGODB_URI);
 
@@ -31,7 +32,6 @@ if (process.env.NODE_ENV !== 'test') {
 Method: :method
 Path: :url
 Status: :status
-Response: :res-content
 Response Length: :res[content-length]
 Response time: :response-time ms
 Content: :req-content
@@ -42,6 +42,7 @@ Content: :req-content
 }
 
 app.use('/api/blogs', blogsRouter);
+app.use('/api/users', usersRouter);
 app.use(middleware.unknownEndpoint);
 app.use(middleware.errorHandler);
 
