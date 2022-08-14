@@ -1,0 +1,15 @@
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+
+{
+  "title": "Testing",
+  "author": "Noobat",
+  "url": "https://www.google.com",
+  "userId": "62f8ef2f45262a36cbec4237"
+}
+
+###
+GET http://localhost:3003/api/users/62f8ef2f45262a36cbec4237
+
+###
+GET http://localhost:3003/api/blogs/62f905734fbb598780bc3a79
