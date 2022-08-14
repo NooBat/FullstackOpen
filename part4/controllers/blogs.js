@@ -1,7 +1,7 @@
 const blogsRouter = require('express').Router();
 
 const Blog = require('../models/blog');
-const User = require('../models/user');
+const { userExtractor } = require('../utils/middleware');
 
 blogsRouter.get('/', async (request, response) => {
   const blogs = await Blog.find({}).populate('user', {
@@ -24,10 +24,10 @@ blogsRouter.get('/:id', async (request, response) => {
   response.json(blog);
 });
 
-blogsRouter.post('/', async (request, response) => {
-  const { title, author, url, likes, userId } = request.body;
+blogsRouter.post('/', userExtractor, async (request, response) => {
+  const { title, author, url, likes } = request.body;
 
-  const user = await User.findById(userId);
+  const user = request.user;
 
   const blog = new Blog({
     title,
@@ -38,16 +38,25 @@ blogsRouter.post('/', async (request, response) => {
   });
 
   const savedBlog = await blog.save();
-  console.log(savedBlog);
   user.blogs = user.blogs.concat(savedBlog._id);
   await user.save();
   response.status(201).json(savedBlog);
 });
 
-blogsRouter.delete('/:id', async (request, response) => {
+blogsRouter.delete('/:id', userExtractor, async (request, response) => {
   const id = request.params.id;
-  await Blog.findByIdAndRemove(id);
-  response.status(204).end();
+  const user = request.user;
+
+  const blog = await Blog.findById(id);
+
+  if (blog.user.toString() === user._id.toString()) {
+    await blog.remove();
+    return response.status(204).end();
+  }
+
+  response.status(401).send({
+    error: 'unauthorized',
+  });
 });
 
 blogsRouter.put('/:id', async (request, response) => {

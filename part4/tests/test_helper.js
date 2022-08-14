@@ -5,10 +5,12 @@ const initialUsers = [
   {
     name: 'defacto',
     username: 'defacto',
+    password: '1234',
   },
   {
     name: 'Daniel Nguyen',
     username: 'noobat',
+    password: '1234',
   },
 ];
 

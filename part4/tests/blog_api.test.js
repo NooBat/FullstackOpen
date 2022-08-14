@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const supertest = require('supertest');
+const jwt = require('jsonwebtoken');
 
 const app = require('../app');
 const Blog = require('../models/blog');
@@ -12,10 +13,12 @@ const api = supertest(app);
 beforeEach(async () => {
   await Blog.deleteMany({});
   await Blog.insertMany(helper.initialBlogs);
+  await User.deleteMany({});
+  await User.insertMany(helper.initialUsers);
 });
 
 describe('when there are some blogs in the database', () => {
-  test("all blogs are returned in JSON format and 'user' field is populated ", async () => {
+  test('all blogs are returned in JSON format', async () => {
     await api
       .get('/api/blogs')
       .expect(200)
@@ -39,16 +42,27 @@ describe('when there are some blogs in the database', () => {
 
 describe('addition of a new blog', () => {
   test('sucess with valid data', async () => {
+    const user = await User.findOne({ username: 'noobat' });
+
+    const userForToken = {
+      username: user.username,
+      id: user._id,
+    };
+
+    const token = jwt.sign(userForToken, process.env.SECRET);
+
     const newBlog = {
       title: 'Five mistakes you make with React',
       author: 'Daniel Kadavra',
       url: 'https://fullstackopen.com/en/part4/testing_the_backend#more-tests-and-refactoring-the-backend',
       likes: 8,
+      user: user._id,
     };
 
     await api
       .post('/api/blogs')
       .send(newBlog)
+      .auth(token, { type: 'bearer' })
       .expect(201)
       .expect('Content-Type', /application\/json/);
 
@@ -60,6 +74,15 @@ describe('addition of a new blog', () => {
   });
 
   test("sending a blog without 'likes' attribute default it to 0", async () => {
+    const user = await User.findOne({ username: 'noobat' });
+
+    const userForToken = {
+      username: user.username,
+      id: user._id,
+    };
+
+    const token = jwt.sign(userForToken, process.env.SECRET);
+
     const withoutLikesBlog = {
       title: 'Five mistakes you make with React',
       author: 'Daniel Kadavra',
@@ -69,6 +92,7 @@ describe('addition of a new blog', () => {
     await api
       .post('/api/blogs')
       .send(withoutLikesBlog)
+      .auth(token, { type: 'bearer' })
       .expect(201)
       .expect('Content-Type', /application\/json/);
 
@@ -81,6 +105,15 @@ describe('addition of a new blog', () => {
   });
 
   test("a blog without 'title' or 'url' attributes will not be sent and result in 400 Bad Request", async () => {
+    const user = await User.findOne({ username: 'noobat' });
+
+    const userForToken = {
+      username: user.username,
+      id: user._id,
+    };
+
+    const token = jwt.sign(userForToken, process.env.SECRET);
+
     const erroneousBlogs = [
       {
         author: 'Daniel Kadavra',
@@ -96,20 +129,56 @@ describe('addition of a new blog', () => {
     ];
 
     for (const blog of erroneousBlogs) {
-      await api.post('/api/blogs').send(blog).expect(400);
+      await api
+        .post('/api/blogs')
+        .send(blog)
+        .auth(token, { type: 'bearer' })
+        .expect(400);
     }
 
     const blogsAtEnd = await helper.blogsInDb();
     expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length);
   });
-}, 10000);
+
+  test('addition fail if unauthorized with status code 401', async () => {
+    const blog = {
+      title: 'Five mistakes you make with React',
+      author: 'Daniel Kadavra',
+      url: 'https://fullstackopen.com/en/part4/testing_the_backend#more-tests-and-refactoring-the-backend',
+    };
+
+    await api
+      .post('/api/blogs')
+      .send(blog)
+      .expect(401)
+      .expect('Content-Type', /application\/json/);
+  });
+});
 
 describe('deleting a blog', () => {
-  test('succeeds with status code 204 if id is valid', async () => {
+  test('succeeds with status code 204 if id is valid and authorized', async () => {
+    const user = await User.findOne({ username: 'noobat' });
+
+    const userForToken = {
+      username: user.username,
+      id: user._id,
+    };
+
+    const token = jwt.sign(userForToken, process.env.SECRET);
+
     const blogsAtStart = await helper.blogsInDb();
     const blogToDelete = blogsAtStart[0];
 
-    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+    await Blog.findByIdAndUpdate(
+      blogToDelete.id,
+      { ...blogToDelete, user: user._id },
+      { new: true }
+    );
+
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .auth(token, { type: 'bearer' })
+      .expect(204);
 
     const blogsAtEnd = await helper.blogsInDb();
     expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length - 1);
