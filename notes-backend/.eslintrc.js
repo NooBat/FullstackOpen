@@ -1,17 +1,18 @@
 module.exports = {
   env: {
-    browser: true,
     commonjs: true,
     es2021: true,
+    node: true,
     jest: true,
   },
-  extends: [
-    'airbnb-base',
-  ],
+  extends: 'eslint:recommended',
   parserOptions: {
     ecmaVersion: 'latest',
   },
   rules: {
-    'no-console': 0,
+    indent: ['error', 2],
+    'linebreak-style': ['error', 'unix'],
+    quotes: ['error', 'single', { avoidEscape: true }],
+    semi: ['error', 'always'],
   },
 };
