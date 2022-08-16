@@ -1,20 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 import Footer from './components/Footer';
+import LoginForm from './components/LoginForm';
 import Note from './components/Note';
+import NoteForm from './components/NoteForm';
 import Notification from './components/Notification';
+import Toggable from './components/Toggable';
 
 import loginService from './services/login';
 import noteService from './services/notes';
 
 const App = () => {
   const [notes, setNotes] = useState([]);
-  const [newNote, setNewNote] = useState('');
   const [showAll, setShowAll] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
+
+  const noteFormRef = useRef();
 
   useEffect(async () => {
     const fetchedNotes = await noteService.getAll();
@@ -39,19 +41,26 @@ const App = () => {
     setNotes(notes.map((n) => (n.id === id ? updatedNote : n)));
   };
 
-  const addNote = async (event) => {
-    event.preventDefault();
-    const noteObject = {
-      content: newNote,
-      date: new Date().toISOString(),
-      important: Math.random() > 0.5,
-    };
+  const login = async (userObject) => {
+    try {
+      const loggedInUser = await loginService.login(userObject);
+      window.localStorage.setItem('loggedNoteAppUser', JSON.stringify(loggedInUser));
+      setUser(loggedInUser);
+      noteService.setToken(loggedInUser.token);
+    } catch (e) {
+      setErrorMessage(e.response.data.error);
+      setTimeout(() => {
+        setErrorMessage('');
+      }, 5000);
+    }
+  };
 
+  const createNote = async (noteObject) => {
+    noteFormRef.current.toggleVisibility();
     try {
       const note = await noteService.create(noteObject);
       setNotes(notes.concat(note));
-      setNewNote('');
-    } catch (err) {
+    } catch (e) {
       setErrorMessage('cannot add note to database');
       setTimeout(() => {
         setErrorMessage('');
@@ -59,75 +68,7 @@ const App = () => {
     }
   };
 
-  const handleNoteChange = (event) => {
-    setNewNote(event.target.value);
-  };
-
-  const handleLogin = async (event) => {
-    event.preventDefault();
-
-    try {
-      const loggedInUser = await loginService.login({
-        username,
-        password,
-      });
-
-      window.localStorage.setItem('loggedNoteAppUser', JSON.stringify(user));
-
-      setUser(loggedInUser);
-      setUsername('');
-      setPassword('');
-      noteService.setToken(user.token);
-    } catch (err) {
-      setErrorMessage('wrong credentials');
-      setTimeout(() => {
-        setErrorMessage('');
-      }, 5000);
-    }
-  };
-
   const notesToShow = showAll ? notes : notes.filter((note) => note.important);
-
-  const loginForm = () => (
-    <form onSubmit={handleLogin}>
-      <div>
-        {' '}
-        <label htmlFor='username'>
-          Username
-          {' '}
-          <input
-            type='text'
-            value={username}
-            onChange={({ target }) => setUsername(target.value)}
-            name='username'
-            id='username'
-          />
-        </label>
-      </div>
-      <div>
-        {' '}
-        <label htmlFor='password'>
-          Password
-          {' '}
-          <input
-            type='password'
-            value={password}
-            onChange={({ target }) => setPassword(target.value)}
-            name='password'
-            id='password'
-          />
-        </label>
-      </div>
-      <button type='submit'>Login</button>
-    </form>
-  );
-
-  const noteForm = () => (
-    <form onSubmit={addNote}>
-      <input value={newNote} onChange={handleNoteChange} />
-      <button type='submit'>save</button>
-    </form>
-  );
 
   return (
     <div>
@@ -141,10 +82,14 @@ const App = () => {
             {' '}
             logged in
           </p>
-          {noteForm()}
+          <Toggable buttonLabel='create new note' ref={noteFormRef}>
+            <NoteForm createNote={createNote} />
+          </Toggable>
         </div>
       ) : (
-        loginForm()
+        <Toggable buttonLabel='log in'>
+          <LoginForm login={login} />
+        </Toggable>
       )}
 
       <div>

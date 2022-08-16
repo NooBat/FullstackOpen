@@ -16,7 +16,7 @@ const noteSchema = new mongoose.Schema({
   important: Boolean,
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'user',
+    ref: 'User',
   },
 });
 

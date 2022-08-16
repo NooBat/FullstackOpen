@@ -19,8 +19,8 @@
 .env.production.local
 
 # linters and formatters
-.eslintrc.js
-.prettierrc.js
+.eslintrc.*
+.prettierrc.*
 
 npm-debug.log*
 yarn-debug.log*
