@@ -1,5 +1,6 @@
 /* eslint-disable react/destructuring-assignment */
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const Notification = (noti) => (noti ? (
   <div
@@ -24,5 +25,16 @@ const Notification = (noti) => (noti ? (
     </p>
   </div>
 ) : null);
+
+Notification.propTypes = {
+  noti: PropTypes.shape({
+    message: PropTypes.string.isRequired,
+    color: PropTypes.string.isRequired,
+  }),
+};
+
+Notification.defaultProps = {
+  noti: null,
+};
 
 export default Notification;

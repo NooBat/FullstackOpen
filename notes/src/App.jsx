@@ -5,7 +5,7 @@ import LoginForm from './components/LoginForm';
 import Note from './components/Note';
 import NoteForm from './components/NoteForm';
 import Notification from './components/Notification';
-import Toggable from './components/Toggable';
+import Togglable from './components/Togglable';
 
 import loginService from './services/login';
 import noteService from './services/notes';
@@ -82,14 +82,14 @@ const App = () => {
             {' '}
             logged in
           </p>
-          <Toggable buttonLabel='create new note' ref={noteFormRef}>
+          <Togglable buttonLabel='create new note' ref={noteFormRef}>
             <NoteForm createNote={createNote} />
-          </Toggable>
+          </Togglable>
         </div>
       ) : (
-        <Toggable buttonLabel='log in'>
+        <Togglable buttonLabel='log in'>
           <LoginForm login={login} />
-        </Toggable>
+        </Togglable>
       )}
 
       <div>
