@@ -33,11 +33,11 @@ notesRouter.get('/:id', async (request, response) => {
 notesRouter.post('/', async (request, response) => {
   const { content, important } = request.body;
   const token = getTokenFrom(request);
-  const decodedToken = jwt.verify(token, process.env.SECRET);
-  if (!decodedToken.id) {
+  if (!token) {
     return response.status(401).json({ error: 'token missing or invalid' });
   }
-  const user = await User.findById(decodedToken);
+  const decodedToken = jwt.verify(token, process.env.SECRET);
+  const user = await User.findById(decodedToken.id);
 
   const note = new Note({
     content,
@@ -62,7 +62,15 @@ notesRouter.put('/:id', async (request, response) => {
   const { content, important } = request.body;
 
   const newNote = { content, important };
-  const updatedNote = await Note.findByIdAndUpdate(request.params.id, newNote, { new: true, runValidators: true, content: 'query' });
+  const updatedNote = await Note.findByIdAndUpdate(
+    request.params.id,
+    newNote,
+    { 
+      new: true,
+      runValidators: true,
+      content: 'query'
+    }
+  );
   response.json(updatedNote);
 });
 

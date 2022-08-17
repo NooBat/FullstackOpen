@@ -18,14 +18,14 @@ const userExtractor = async (request, response, next) => {
   const token = request.token;
 
   if (!token) {
-    next({ name: 'JsonWebTokenError', message: 'unauthorized' });
-  }
-
-  const decodedToken = jwt.verify(token, process.env.SECRET);
-  if (!decodedToken.id) {
     request.user = null;
   } else {
-    request.user = await User.findById(decodedToken.id);
+    const decodedToken = jwt.verify(token, process.env.SECRET);
+    if (!decodedToken.id) {
+      request.user = null;
+    } else {
+      request.user = await User.findById(decodedToken.id);
+    }
   }
 
   next();
@@ -44,8 +44,6 @@ const errorHandler = (error, request, response, next) => {
     return response.status(400).send({ error: error.message });
   } else if (error.name === 'JSONWebTokenError') {
     return response.status(401).send({ error: 'invalid token' });
-  } else if (error.name === 'JsonWebTokenError') {
-    return response.status(401).send({ error: 'unauthorized' });
   }
 
   next(error);

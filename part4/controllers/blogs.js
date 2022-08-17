@@ -7,7 +7,6 @@ blogsRouter.get('/', async (request, response) => {
   const blogs = await Blog.find({}).populate('user', {
     name: 1,
     username: 1,
-    id: 1,
   });
   response.json(blogs);
 });
@@ -18,7 +17,6 @@ blogsRouter.get('/:id', async (request, response) => {
   const blog = await Blog.findById(id).populate('user', {
     name: true,
     username: true,
-    id: true,
   });
 
   response.json(blog);
@@ -28,6 +26,10 @@ blogsRouter.post('/', userExtractor, async (request, response) => {
   const { title, author, url, likes } = request.body;
 
   const user = request.user;
+
+  if (!user) {
+    return response.status(401).send({ error: 'missing token' });
+  }
 
   const blog = new Blog({
     title,
@@ -40,22 +42,37 @@ blogsRouter.post('/', userExtractor, async (request, response) => {
   const savedBlog = await blog.save();
   user.blogs = user.blogs.concat(savedBlog._id);
   await user.save();
-  response.status(201).json(savedBlog);
+
+  response.status(201).json(
+    await Blog.populate(savedBlog, {
+      path: 'user',
+      select: {
+        name: true,
+        username: true,
+      },
+    })
+  );
 });
 
 blogsRouter.delete('/:id', userExtractor, async (request, response) => {
-  const id = request.params.id;
+  const blogId = request.params.id;
   const user = request.user;
 
-  const blog = await Blog.findById(id);
+  const blogToDelete = await Blog.findById(blogId);
+  if (!blogToDelete) {
+    return response.status(204).end();
+  }
 
-  if (blog.user.toString() === user._id.toString()) {
-    await blog.remove();
+  if (
+    blogToDelete.user &&
+    blogToDelete.user.toString() === user.id.toString()
+  ) {
+    await blogToDelete.remove();
     return response.status(204).end();
   }
 
   response.status(401).send({
-    error: 'unauthorized',
+    error: 'only creator can delete a blog',
   });
 });
 
@@ -71,6 +88,9 @@ blogsRouter.put('/:id', async (request, response) => {
     new: true,
     runValidators: true,
     context: 'query',
+  }).populate('user', {
+    name: true,
+    username: true,
   });
 
   response.json(returnedBlog);
