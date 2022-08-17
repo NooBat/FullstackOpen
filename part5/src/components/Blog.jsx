@@ -30,7 +30,7 @@ const Blog = ({
         border: '3px solid black',
       }}
     >
-      <article>
+      <article className='defaultView'>
         {blog.title}
         {' '}
         {blog.author}
@@ -39,7 +39,7 @@ const Blog = ({
           {visible ? 'hide' : 'view'}
         </button>
       </article>
-      <div style={{ display: visible ? '' : 'none' }}>
+      <div style={{ display: visible ? '' : 'none' }} className='toggledView'>
         <p style={{ margin: '10px 0 0 0' }}>{blog.url}</p>
         <p style={{ margin: '5px 0 0 0' }}>
           likes
@@ -50,8 +50,8 @@ const Blog = ({
             like
           </button>
         </p>
-        <p style={{ margin: '5px 0 0 0' }}>{blog.user.name}</p>
-        {blog.user.username === username ? (
+        <p style={{ margin: '5px 0 0 0' }}>{blog.user ? blog.user.name : 'Anonymous'}</p>
+        {blog.user && blog.user.username === username ? (
           <button style={{ margin: '5px 0 0 0' }} type='button' onClick={handleClickDelete}>
             remove
           </button>
