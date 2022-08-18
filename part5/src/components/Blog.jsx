@@ -8,7 +8,7 @@ const Blog = ({
   const handleClickLike = () => {
     const newBlog = {
       ...blog,
-      user: blog.user.id,
+      user: blog.user ? blog.user.id : undefined,
       likes: blog.likes + 1,
     };
 
