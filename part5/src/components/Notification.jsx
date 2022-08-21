@@ -1,9 +1,9 @@
-/* eslint-disable react/destructuring-assignment */
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const Notification = (noti) => (noti ? (
+const Notification = ({ noti }) => (noti ? (
   <div
+    className='notification'
     style={{
       backgroundColor: 'rgb(203, 213, 225)',
       margin: '10px auto',

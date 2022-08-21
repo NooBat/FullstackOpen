@@ -1,7 +1,6 @@
 const express = require('express');
 require('express-async-errors');
 const cors = require('cors');
-const morgan = require('morgan');
 const mongoose = require('mongoose');
 
 const config = require('./utils/config');
@@ -14,7 +13,8 @@ const usersRouter = require('./controllers/users');
 
 logger.info('connecting to:', config.MONGODB_URI);
 
-mongoose.connect(config.MONGODB_URI)
+mongoose
+  .connect(config.MONGODB_URI)
   .then(() => {
     logger.info('connected to MongoDB');
   })
@@ -27,6 +27,8 @@ app.use(cors());
 app.use(express.json());
 
 if (process.env.NODE_ENV !== 'test') {
+  const morgan = require('morgan');
+
   morgan.token('req-content', (request) => JSON.stringify(request.body));
   app.use(
     morgan(
@@ -41,6 +43,9 @@ Content: :req-content
       `
     )
   );
+} else {
+  const testingRouter = require('./controllers/testing');
+  app.use('/api/testing', testingRouter);
 }
 
 app.use(middleware.tokenExtractor);

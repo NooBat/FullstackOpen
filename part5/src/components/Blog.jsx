@@ -8,7 +8,7 @@ const Blog = ({
   const handleClickLike = () => {
     const newBlog = {
       ...blog,
-      user: blog.user.id,
+      user: blog.user ? blog.user.id : undefined,
       likes: blog.likes + 1,
     };
 
@@ -23,6 +23,7 @@ const Blog = ({
 
   return (
     <section
+      className='blog'
       style={{
         margin: '5px',
         padding: '10px',
@@ -41,18 +42,25 @@ const Blog = ({
       </article>
       <div style={{ display: visible ? '' : 'none' }} className='toggledView'>
         <p style={{ margin: '10px 0 0 0' }}>{blog.url}</p>
-        <p style={{ margin: '5px 0 0 0' }}>
+        <p className='blogLikes' style={{ margin: '5px 0 0 0' }}>
           likes
           {' '}
           {blog.likes}
           {' '}
-          <button type='button' onClick={handleClickLike}>
+          <button id='like-button' type='button' onClick={handleClickLike}>
             like
           </button>
         </p>
-        <p style={{ margin: '5px 0 0 0' }}>{blog.user ? blog.user.name : 'Anonymous'}</p>
+        <p id='blog-owner' style={{ margin: '5px 0 0 0' }}>
+          {blog.user ? blog.user.name : 'Anonymous'}
+        </p>
         {blog.user && blog.user.username === username ? (
-          <button style={{ margin: '5px 0 0 0' }} type='button' onClick={handleClickDelete}>
+          <button
+            id='delete-button'
+            style={{ margin: '5px 0 0 0' }}
+            type='button'
+            onClick={handleClickDelete}
+          >
             remove
           </button>
         ) : null}
