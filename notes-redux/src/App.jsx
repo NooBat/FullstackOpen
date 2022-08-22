@@ -1,14 +1,7 @@
 import React from 'react';
-
 import { legacy_createStore as createStore } from 'redux';
 
-const noteReducer = (state = [], action = {}) => {
-  if (action.type === 'NEW_NOTE') {
-    return state.concat(action.data);
-  }
-
-  return state;
-};
+import noteReducer from './reducers/noteReducers';
 
 const store = createStore(noteReducer);
 
@@ -30,18 +23,53 @@ store.dispatch({
   },
 });
 
-const App = () => (
-  <div>
-    <ul>
-      {store.getState().map((note) => (
-        <li key={note.id}>
-          {note.content}
-          {' '}
-          <strong>{note.important ? 'important' : ''}</strong>
-        </li>
-      ))}
-    </ul>
-  </div>
-);
+const App = () => {
+  const generateId = () => Number((Math.random() * 1000000).toFixed(0));
+
+  const addNote = (event) => {
+    event.preventDefault();
+    const content = event.target.note.value;
+    // eslint-disable-next-line no-param-reassign
+    event.target.note.value = '';
+    store.dispatch({
+      type: 'NEW_NOTE',
+      data: {
+        content,
+        important: false,
+        id: generateId(),
+      },
+    });
+  };
+
+  const toggleImportance = (id) => {
+    store.dispatch({
+      type: 'TOGGLE_IMPORTANCE',
+      data: { id },
+    });
+  };
+
+  return (
+    <div>
+      <form onSubmit={addNote}>
+        <input name='note' type='text' />
+        <button type='submit'>add</button>
+      </form>
+      <ul>
+        {store.getState().map((note) => (
+          <li key={note.id}>
+            {note.content}
+            {' '}
+            <strong>{note.important ? 'important' : ''}</strong>
+            <button type='button' onClick={() => toggleImportance(note.id)}>
+              make
+              {' '}
+              {note.important ? 'not important' : 'important'}
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
 
 export default App;
