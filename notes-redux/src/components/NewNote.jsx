@@ -1,17 +1,19 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 
-import { createNote } from '../reducers/noteReducers';
+import noteService from '../services/notes';
+import { createNote } from '../reducers/noteReducer';
 
 const NewNote = () => {
   const dispatch = useDispatch();
 
-  const addNote = (event) => {
+  const addNote = async (event) => {
     event.preventDefault();
     const content = event.target.note.value;
     // eslint-disable-next-line no-param-reassign
     event.target.note.value = '';
-    dispatch(createNote(content));
+    const newNote = await noteService.createNew(content);
+    dispatch(createNote(newNote));
   };
 
   return (

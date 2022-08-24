@@ -2,8 +2,10 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { voteAnecdote } from '../reducers/anecdoteReducer';
+import { setNotification } from '../reducers/notificationReducer';
 
-const anecdoteSelector = (state) => state;
+const anecdoteSelector = (state) => state.anecdotes;
+const filterSelector = (state) => state.filter;
 
 const Anecdote = ({ anecdote, handleClick }) => (
   <div>
@@ -20,15 +22,21 @@ const Anecdote = ({ anecdote, handleClick }) => (
 );
 
 const AnecdoteList = () => {
-  const anecdotes = useSelector(anecdoteSelector).sort((a, b) => b.votes - a.votes);
+  const anecdotes = useSelector(anecdoteSelector);
+  const filter = useSelector(filterSelector);
   const dispatch = useDispatch();
 
-  const vote = (id) => {
-    dispatch(voteAnecdote(id));
+  const vote = (anecdote) => {
+    const newAnecdote = { ...anecdote, votes: anecdote.votes + 1 || 0 };
+    dispatch(voteAnecdote(newAnecdote));
+    dispatch(setNotification(`you voted '${anecdote.content}'`, 5000));
   };
 
-  return anecdotes.map((anecdote) => (
-    <Anecdote key={anecdote.id} anecdote={anecdote} handleClick={() => vote(anecdote.id)} />
+  const filteredAnecdotes = anecdotes.filter((anecdote) => anecdote.content.match(new RegExp(`^${filter}`, 'i')));
+  const sortedFilteredAnecdotes = [...filteredAnecdotes].sort((a, b) => b.votes - a.votes);
+
+  return sortedFilteredAnecdotes.map((anecdote) => (
+    <Anecdote key={anecdote.id} anecdote={anecdote} handleClick={() => vote(anecdote)} />
   ));
 };
 

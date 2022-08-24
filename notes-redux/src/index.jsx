@@ -1,13 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { legacy_createStore as createStore } from 'redux';
+import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 
 import './index.css';
 import App from './App';
-import noteReducer from './reducers/noteReducers';
+import noteReducer from './reducers/noteReducer';
+import filterReducer from './reducers/filterReducer';
 
-const store = createStore(noteReducer);
+const store = configureStore({
+  reducer: {
+    notes: noteReducer,
+    filter: filterReducer,
+  },
+});
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
