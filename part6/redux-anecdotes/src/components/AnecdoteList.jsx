@@ -1,11 +1,9 @@
+/* eslint-disable no-shadow */
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { connect } from 'react-redux';
 
 import { voteAnecdote } from '../reducers/anecdoteReducer';
 import { setNotification } from '../reducers/notificationReducer';
-
-const anecdoteSelector = (state) => state.anecdotes;
-const filterSelector = (state) => state.filter;
 
 const Anecdote = ({ anecdote, handleClick }) => (
   <div>
@@ -21,23 +19,32 @@ const Anecdote = ({ anecdote, handleClick }) => (
   </div>
 );
 
-const AnecdoteList = () => {
-  const anecdotes = useSelector(anecdoteSelector);
-  const filter = useSelector(filterSelector);
-  const dispatch = useDispatch();
-
+const AnecdoteList = ({ anecdotes, voteAnecdote, setNotification }) => {
   const vote = (anecdote) => {
     const newAnecdote = { ...anecdote, votes: anecdote.votes + 1 || 0 };
-    dispatch(voteAnecdote(newAnecdote));
-    dispatch(setNotification(`you voted '${anecdote.content}'`, 5000));
+    voteAnecdote(newAnecdote);
+    setNotification(`you voted '${anecdote.content}'`, 5000);
   };
 
-  const filteredAnecdotes = anecdotes.filter((anecdote) => anecdote.content.match(new RegExp(`^${filter}`, 'i')));
-  const sortedFilteredAnecdotes = [...filteredAnecdotes].sort((a, b) => b.votes - a.votes);
-
-  return sortedFilteredAnecdotes.map((anecdote) => (
+  return anecdotes.map((anecdote) => (
     <Anecdote key={anecdote.id} anecdote={anecdote} handleClick={() => vote(anecdote)} />
   ));
 };
 
-export default AnecdoteList;
+const mapStateToProps = (state) => {
+  const filteredAnecdotes = state.anecdotes.filter((anecdote) => anecdote.content.match(new RegExp(`^${state.filter}`, 'i')));
+  const sortedFilteredAnecdotes = [...filteredAnecdotes].sort((a, b) => b.votes - a.votes);
+
+  return {
+    anecdotes: sortedFilteredAnecdotes,
+  };
+};
+
+const mapDispatchToProps = {
+  voteAnecdote,
+  setNotification,
+};
+
+const ConnectedAnecdoteList = connect(mapStateToProps, mapDispatchToProps)(AnecdoteList);
+
+export default ConnectedAnecdoteList;

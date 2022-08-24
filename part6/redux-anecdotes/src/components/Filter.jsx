@@ -1,17 +1,13 @@
+/* eslint-disable no-shadow */
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { connect } from 'react-redux';
 
 import { changeFilter, resetFilter } from '../reducers/filterReducer';
 
-const filterSelector = (state) => state.filter;
-
-const Filter = () => {
-  const filter = useSelector(filterSelector);
-  const dispatch = useDispatch();
-
+const Filter = ({ filter, changeFilter, resetFilter }) => {
   const handleChange = (event) => {
     // input-field value is in variable event.target.value
-    dispatch(changeFilter(event.target.value));
+    changeFilter(event.target.value);
   };
 
   const style = {
@@ -23,11 +19,22 @@ const Filter = () => {
       filter
       {' '}
       <input type='text' onChange={handleChange} value={filter} />
-      <button type='button' onClick={() => dispatch(resetFilter())}>
+      <button type='button' onClick={() => resetFilter()}>
         reset
       </button>
     </div>
   );
 };
 
-export default Filter;
+const mapStateToProps = (state) => ({
+  filter: state.filter,
+});
+
+const mapDispatchToProps = {
+  changeFilter,
+  resetFilter,
+};
+
+const ConnectedFilter = connect(mapStateToProps, mapDispatchToProps)(Filter);
+
+export default ConnectedFilter;

@@ -3,10 +3,10 @@ import { useDispatch } from 'react-redux';
 
 import { initializeAnecdotes } from './reducers/anecdoteReducer';
 
-import AnecdoteForm from './components/AnecdoteForm';
+import ConnectedAnecdoteForm from './components/AnecdoteForm';
 import AnecdoteList from './components/AnecdoteList';
-import Filter from './components/Filter';
-import Notification from './components/Notification';
+import ConnectedFilter from './components/Filter';
+import ConnectedNotification from './components/Notification';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -18,10 +18,10 @@ const App = () => {
   return (
     <div>
       <h2>Anecdotes</h2>
-      <Filter />
-      <Notification />
+      <ConnectedFilter />
+      <ConnectedNotification />
       <AnecdoteList />
-      <AnecdoteForm />
+      <ConnectedAnecdoteForm />
     </div>
   );
 };
