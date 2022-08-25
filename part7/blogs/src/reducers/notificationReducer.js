@@ -19,12 +19,12 @@ export default notificationSlice.reducer;
 
 export const { createNotification, clearNotification } = notificationSlice.actions;
 
-export const setNotification = (notification) => async (dispatch) => {
+export const setNotification = (notification, timeout) => async (dispatch) => {
   clearTimeout(timeoutIdList.shift());
   dispatch(createNotification(notification));
   timeoutIdList.push(
     setTimeout(() => {
       clearNotification();
-    }, 5000),
+    }, timeout),
   );
 };

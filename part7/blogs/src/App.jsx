@@ -32,7 +32,7 @@ const App = () => {
       .getAll()
       .then((allBlogs) => setBlogs(sortBlogs(allBlogs)))
       .catch(() => {
-        dispatch(setNotification({ message: 'cannot get blogs', color: 'red' }));
+        dispatch(setNotification({ message: 'cannot get blogs', color: 'red' }, 5000));
       });
   }, []);
 
@@ -53,9 +53,11 @@ const App = () => {
       blogService.setToken(loggedInUser.token);
       window.localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
 
-      dispatch(setNotification({ message: `user ${loggedInUser.name} logged in`, color: 'green' }));
+      dispatch(
+        setNotification({ message: `user ${loggedInUser.name} logged in`, color: 'green' }, 5000),
+      );
     } catch (e) {
-      dispatch(setNotification({ message: e.response.data.error, color: 'red' }));
+      dispatch(setNotification({ message: e.response.data.error, color: 'red' }, 5000));
     }
   };
 
@@ -64,7 +66,7 @@ const App = () => {
     blogService.setToken(null);
     window.localStorage.removeItem('loggedInUser');
 
-    dispatch(setNotification({ message: `user ${user.name} logged out`, color: 'green' }));
+    dispatch(setNotification({ message: `user ${user.name} logged out`, color: 'green' }, 5000));
   };
 
   const createBlog = async (blogObject) => {
@@ -74,17 +76,23 @@ const App = () => {
       const blog = await blogService.create(blogObject);
       setBlogs(sortBlogs(blogs.concat(blog)));
       dispatch(
-        setNotification({
-          message: `a new blog ${blog.title} by ${blog.author} added`,
-          color: 'green',
-        }),
+        setNotification(
+          {
+            message: `a new blog ${blog.title} by ${blog.author} added`,
+            color: 'green',
+          },
+          5000,
+        ),
       );
     } catch (e) {
       dispatch(
-        setNotification({
-          message: `blog ${blogObject.title} due to: ${e.response.data.error}`,
-          color: 'red',
-        }),
+        setNotification(
+          {
+            message: `blog ${blogObject.title} due to: ${e.response.data.error}`,
+            color: 'red',
+          },
+          5000,
+        ),
       );
     }
   };
