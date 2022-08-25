@@ -1,23 +1,26 @@
+/* eslint-disable no-alert */
 import React, { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 
-const Blog = ({
-  blog, username, updateLikes, handleDelete,
-}) => {
+import { update, deleteBlog } from '../reducers/blogsReducer';
+
+const Blog = ({ blog, username }) => {
+  const dispatch = useDispatch();
   const [visible, setVisible] = useState(false);
 
   const handleClickLike = () => {
-    const newBlog = {
+    const updatedBlog = {
       ...blog,
       user: blog.user ? blog.user.id : undefined,
       likes: blog.likes + 1,
     };
 
-    updateLikes(newBlog);
+    dispatch(update(updatedBlog));
   };
 
   const handleClickDelete = () => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
-      handleDelete(blog.id);
+      dispatch(deleteBlog(blog.id));
     }
   };
 
@@ -69,4 +72,15 @@ const Blog = ({
   );
 };
 
-export default Blog;
+const blogSelector = (state) => {
+  const sortedBlogsByLikes = [...state.blogs].sort((a, b) => b.likes - a.likes);
+  return sortedBlogsByLikes;
+};
+
+const BlogList = ({ username }) => {
+  const blogs = useSelector(blogSelector);
+
+  return blogs.map((blog) => <Blog key={blog.id} blog={blog} username={username} />);
+};
+
+export default BlogList;

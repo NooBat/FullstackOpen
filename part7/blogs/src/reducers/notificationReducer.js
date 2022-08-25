@@ -24,7 +24,7 @@ export const setNotification = (notification, timeout) => async (dispatch) => {
   dispatch(createNotification(notification));
   timeoutIdList.push(
     setTimeout(() => {
-      clearNotification();
+      dispatch(clearNotification());
     }, timeout),
   );
 };

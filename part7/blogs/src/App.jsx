@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 
-import Blog from './components/Blog';
+import BlogList from './components/BlogList';
 import BlogForm from './components/BlogForm';
 import LoginForm from './components/LoginForm';
 import Notification from './components/Notification';
@@ -10,26 +10,21 @@ import ToggleComponent from './components/ToggleComponent';
 import blogService from './services/blogs';
 import loginService from './services/login';
 
+import { getAll, createNew } from './reducers/blogsReducer';
 import { setNotification } from './reducers/notificationReducer';
 
 const App = () => {
   const dispatch = useDispatch();
 
-  const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState(null);
   const blogFormRef = useRef();
 
-  function sortBlogs(arrayOfBlogs) {
-    return arrayOfBlogs.sort((a, b) => a.likes - b.likes);
-  }
-
   useEffect(() => {
-    blogService
-      .getAll()
-      .then((allBlogs) => setBlogs(sortBlogs(allBlogs)))
-      .catch(() => {
-        dispatch(setNotification({ message: 'cannot get blogs', color: 'red' }, 5000));
-      });
+    try {
+      dispatch(getAll());
+    } catch (e) {
+      dispatch(setNotification({ message: 'cannot get blogs', color: 'red' }, 5000));
+    }
   }, []);
 
   useEffect(() => {
@@ -65,16 +60,15 @@ const App = () => {
     dispatch(setNotification({ message: `user ${user.name} logged out`, color: 'green' }, 5000));
   };
 
-  const createBlog = async (blogObject) => {
+  const createBlog = async (blogObj) => {
     blogFormRef.current.toggleVisibility();
 
     try {
-      const blog = await blogService.create(blogObject);
-      setBlogs(sortBlogs(blogs.concat(blog)));
+      dispatch(createNew(blogObj));
       dispatch(
         setNotification(
           {
-            message: `a new blog ${blog.title} by ${blog.author} added`,
+            message: `a new blog ${blogObj.title} by ${blogObj.author} added`,
             color: 'green',
           },
           5000,
@@ -84,24 +78,13 @@ const App = () => {
       dispatch(
         setNotification(
           {
-            message: `blog ${blogObject.title} due to: ${e.response.data.error}`,
+            message: `blog ${blogObj.title} due to: ${e.response.data.error}`,
             color: 'red',
           },
           5000,
         ),
       );
     }
-  };
-
-  const updateLikes = async (newBlog) => {
-    const updatedBlog = await blogService.update(newBlog);
-
-    setBlogs(sortBlogs(blogs.map((blog) => (blog.id === updatedBlog.id ? updatedBlog : blog))));
-  };
-
-  const handleDelete = async (id) => {
-    await blogService.deleteBlog(id);
-    setBlogs(sortBlogs(blogs.filter((blog) => blog.id !== id)));
   };
 
   return (
@@ -123,15 +106,7 @@ const App = () => {
           <ToggleComponent buttonLabel='create new blog' ref={blogFormRef}>
             <BlogForm createBlog={createBlog} />
           </ToggleComponent>
-          {blogs.map((blog) => (
-            <Blog
-              key={blog.id}
-              blog={blog}
-              username={user.username}
-              updateLikes={updateLikes}
-              handleDelete={handleDelete}
-            />
-          ))}
+          <BlogList username={user.username} />
         </main>
       ) : (
         <LoginForm handleLogin={handleLogin} />
