@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import Blog from './components/Blog';
 import BlogForm from './components/BlogForm';
@@ -12,15 +12,11 @@ import loginService from './services/login';
 
 import { setNotification } from './reducers/notificationReducer';
 
-const notificationSelector = (state) => state.notification;
-
 const App = () => {
   const dispatch = useDispatch();
 
   const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState(null);
-  const notification = useSelector(notificationSelector);
-
   const blogFormRef = useRef();
 
   function sortBlogs(arrayOfBlogs) {
@@ -110,7 +106,7 @@ const App = () => {
 
   return (
     <>
-      <Notification notification={notification} />
+      <Notification />
       {user ? (
         <main>
           <h2>blogs</h2>
