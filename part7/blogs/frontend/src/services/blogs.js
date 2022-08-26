@@ -1,8 +1,8 @@
-import axios from 'axios';
+import axios from "axios";
 
-import userService from './user';
+import userService from "./user";
 
-const baseUrl = '/api/blogs';
+const baseUrl = "/api/blogs";
 
 async function getAll() {
   const response = await axios.get(baseUrl);
@@ -11,7 +11,7 @@ async function getAll() {
 
 async function create(newBlog) {
   const config = {
-    headers: { Authorization: userService.getToken() },
+    headers: { Authorization: `bearer ${userService.getToken()}` },
   };
 
   const response = await axios.post(baseUrl, newBlog, config);
@@ -25,7 +25,7 @@ async function update(newBlog) {
 
 async function deleteBlog(id) {
   const config = {
-    headers: { Authorization: userService.getToken() },
+    headers: { Authorization: `bearer ${userService.getToken()}` },
   };
 
   const response = await axios.delete(`${baseUrl}/${id}`, config);
