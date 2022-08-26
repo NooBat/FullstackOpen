@@ -15,6 +15,7 @@ module.exports = {
   rules: {
     quotes: ['error', 'single', { avoidEscape: true }],
     'jsx-quotes': ['error', 'prefer-single'],
+    'react/jsx-props-no-spreading': 'off',
     'react/prop-types': 0,
     'react/function-component-definition': [2, { namedComponents: 'arrow-function' }],
     'import/no-extraneous-dependencies': [

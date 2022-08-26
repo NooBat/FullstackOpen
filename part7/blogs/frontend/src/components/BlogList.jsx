@@ -4,9 +4,13 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import { update, deleteBlog } from '../reducers/blogsReducer';
 
-const Blog = ({ blog, username }) => {
+const userSelector = (state) => state.user;
+
+const Blog = ({ blog }) => {
   const dispatch = useDispatch();
+
   const [visible, setVisible] = useState(false);
+  const user = useSelector(userSelector);
 
   const handleClickLike = () => {
     const updatedBlog = {
@@ -44,7 +48,9 @@ const Blog = ({ blog, username }) => {
         </button>
       </article>
       <div style={{ display: visible ? '' : 'none' }} className='toggledView'>
-        <p style={{ margin: '10px 0 0 0' }}>{blog.url}</p>
+        <a href={blog.url} target='_blank' style={{ margin: '10px 0 0 0' }} rel='noreferrer'>
+          {blog.url}
+        </a>
         <p className='blogLikes' style={{ margin: '5px 0 0 0' }}>
           likes
           {' '}
@@ -55,9 +61,9 @@ const Blog = ({ blog, username }) => {
           </button>
         </p>
         <p id='blog-owner' style={{ margin: '5px 0 0 0' }}>
-          {blog.user ? blog.user.name : 'Anonymous'}
+          {blog.user.name}
         </p>
-        {blog.user && blog.user.username === username ? (
+        {user && blog.user.username === user.username ? (
           <button
             id='delete-button'
             style={{ margin: '5px 0 0 0' }}
@@ -77,10 +83,10 @@ const blogSelector = (state) => {
   return sortedBlogsByLikes;
 };
 
-const BlogList = ({ username }) => {
+const BlogList = () => {
   const blogs = useSelector(blogSelector);
 
-  return blogs.map((blog) => <Blog key={blog.id} blog={blog} username={username} />);
+  return blogs.map((blog) => <Blog key={blog.id} blog={blog} />);
 };
 
 export default BlogList;

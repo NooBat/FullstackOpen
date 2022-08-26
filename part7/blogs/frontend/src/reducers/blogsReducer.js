@@ -2,23 +2,27 @@ import { createSlice } from '@reduxjs/toolkit';
 
 import blogService from '../services/blogs';
 
+const sortByLikes = (a, b) => b.likes - a.likes;
+
 const blogSlice = createSlice({
   name: 'blogs',
   initialState: [],
   reducers: {
-    addBlog(state, action) {
-      state.push(action.payload);
+    appendBlog(state, { payload }) {
+      return state.concat(payload).sort(sortByLikes);
     },
-    updateBlog(state, action) {
-      const updatedBlog = action.payload;
-      return state.map((blog) => (blog.id === action.payload.id ? updatedBlog : blog));
+    updateBlog(state, { payload }) {
+      const updatedBlog = payload;
+      return state
+        .map((blog) => (blog.id === updatedBlog.id ? updatedBlog : blog))
+        .sort(sortByLikes);
     },
-    removeBlog(state, action) {
-      const id = action.payload;
-      return state.filter((blog) => blog.id !== id);
+    removeBlog(state, { payload }) {
+      const id = payload;
+      return state.filter((blog) => blog.id !== id).sort(sortByLikes);
     },
-    setBlogs(state, action) {
-      return action.payload;
+    setBlogs(state, { payload }) {
+      return payload.sort(sortByLikes);
     },
   },
 });
@@ -26,17 +30,17 @@ const blogSlice = createSlice({
 export default blogSlice.reducer;
 
 export const {
-  addBlog, setBlogs, updateBlog, removeBlog,
+  appendBlog, setBlogs, updateBlog, removeBlog,
 } = blogSlice.actions;
 
-export const getAll = () => async (dispatch) => {
+export const initializeBlogs = () => async (dispatch) => {
   const blogs = await blogService.getAll();
   dispatch(setBlogs(blogs));
 };
 
 export const createNew = (blogObj) => async (dispatch) => {
   const newBlog = await blogService.create(blogObj);
-  dispatch(addBlog(newBlog));
+  dispatch(appendBlog(newBlog));
 };
 
 export const update = (blogToUpdate) => async (dispatch) => {

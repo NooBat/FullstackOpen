@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useEffect, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import BlogList from './components/BlogList';
 import BlogForm from './components/BlogForm';
@@ -8,59 +8,41 @@ import Notification from './components/Notification';
 import ToggleComponent from './components/ToggleComponent';
 
 import blogService from './services/blogs';
-import loginService from './services/login';
+import userService from './services/user';
 
-import { getAll, createNew } from './reducers/blogsReducer';
+import { initializeBlogs, createNew } from './reducers/blogsReducer';
+import { initializeUsers } from './reducers/usersReducer';
 import { setNotification } from './reducers/notificationReducer';
+import { logoutUser } from './reducers/userReducer';
+
+const userSelector = (state) => state.user;
 
 const App = () => {
   const dispatch = useDispatch();
 
-  const [user, setUser] = useState(null);
+  const user = useSelector(userSelector);
   const blogFormRef = useRef();
 
   useEffect(() => {
     try {
-      dispatch(getAll());
+      dispatch(initializeBlogs());
+      dispatch(initializeUsers());
     } catch (e) {
       dispatch(setNotification({ message: 'cannot get blogs', color: 'red' }, 5000));
     }
   }, []);
 
   useEffect(() => {
-    const loggedInUserJSON = window.localStorage.getItem('loggedInUser');
-    if (loggedInUserJSON) {
-      const loggedInUser = JSON.parse(loggedInUserJSON);
-      setUser(loggedInUser);
-      blogService.setToken(loggedInUser.token);
-    }
+    userService.getUser();
   }, []);
 
-  const handleLogin = async (userObject) => {
-    try {
-      const loggedInUser = await loginService.login(userObject);
-
-      setUser(loggedInUser);
-      blogService.setToken(loggedInUser.token);
-      window.localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
-
-      dispatch(
-        setNotification({ message: `user ${loggedInUser.name} logged in`, color: 'green' }, 5000),
-      );
-    } catch (e) {
-      dispatch(setNotification({ message: e.response.data.error, color: 'red' }, 5000));
-    }
-  };
-
   const handleLogout = () => {
-    setUser(null);
-    blogService.setToken(null);
-    window.localStorage.removeItem('loggedInUser');
-
+    dispatch(logoutUser());
+    userService.clearUser();
     dispatch(setNotification({ message: `user ${user.name} logged out`, color: 'green' }, 5000));
   };
 
-  const createBlog = async (blogObj) => {
+  const createBlog = (blogObj) => {
     blogFormRef.current.toggleVisibility();
 
     try {
@@ -106,10 +88,10 @@ const App = () => {
           <ToggleComponent buttonLabel='create new blog' ref={blogFormRef}>
             <BlogForm createBlog={createBlog} />
           </ToggleComponent>
-          <BlogList username={user.username} />
+          <BlogList />
         </main>
       ) : (
-        <LoginForm handleLogin={handleLogin} />
+        <LoginForm />
       )}
     </>
   );
