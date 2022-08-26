@@ -53,7 +53,6 @@ const App = () => {
           <section>
             <p>
               {user.name}
-              {' '}
               logged in
               <button type='button' onClick={handleLogout}>
                 Logout
