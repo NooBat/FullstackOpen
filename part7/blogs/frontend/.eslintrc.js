@@ -2,8 +2,6 @@ module.exports = {
   env: {
     browser: true,
     es2021: true,
-    "jest/globals": true,
-    "cypress/globals": true,
   },
   extends: ["plugin:react/recommended", "airbnb"],
   overrides: [],
@@ -11,7 +9,7 @@ module.exports = {
     ecmaVersion: "latest",
     sourceType: "module",
   },
-  plugins: ["react", "jest", "cypress"],
+  plugins: ["react"],
   rules: {
     quotes: ["error", "single", { avoidEscape: true }],
     "jsx-quotes": ["error", "prefer-single"],
