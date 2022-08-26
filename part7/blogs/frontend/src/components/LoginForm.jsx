@@ -14,12 +14,17 @@ const LoginForm = () => {
   const [username, resetUsername] = useField('text');
   const [password, resetPassword] = useField('password');
 
-  const handleLogin = async (userObj) => {
+  const handleLogin = async (event) => {
+    event.preventDefault();
+    const userObj = { username: username.value, password: password.value };
     try {
       const loggedInUser = await loginService.login(userObj);
-      dispatch(loginUser(loggedInUser));
+      userService.setUser(loggedInUser);
+
       resetUsername();
       resetPassword();
+
+      dispatch(loginUser(loggedInUser));
       dispatch(
         setNotification({ message: `user ${loggedInUser.name} logged in`, color: 'green' }, 5000),
       );

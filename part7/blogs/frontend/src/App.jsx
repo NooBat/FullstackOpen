@@ -7,13 +7,12 @@ import LoginForm from './components/LoginForm';
 import Notification from './components/Notification';
 import ToggleComponent from './components/ToggleComponent';
 
-import blogService from './services/blogs';
 import userService from './services/user';
 
-import { initializeBlogs, createNew } from './reducers/blogsReducer';
+import { initializeBlogs } from './reducers/blogsReducer';
 import { initializeUsers } from './reducers/usersReducer';
 import { setNotification } from './reducers/notificationReducer';
-import { logoutUser } from './reducers/userReducer';
+import { loginUser, logoutUser } from './reducers/userReducer';
 
 const userSelector = (state) => state.user;
 
@@ -33,40 +32,16 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    userService.getUser();
+    const userFromStorage = userService.getUser();
+    if (userFromStorage) {
+      dispatch(loginUser(userFromStorage));
+    }
   }, []);
 
   const handleLogout = () => {
     dispatch(logoutUser());
     userService.clearUser();
     dispatch(setNotification({ message: `user ${user.name} logged out`, color: 'green' }, 5000));
-  };
-
-  const createBlog = (blogObj) => {
-    blogFormRef.current.toggleVisibility();
-
-    try {
-      dispatch(createNew(blogObj));
-      dispatch(
-        setNotification(
-          {
-            message: `a new blog ${blogObj.title} by ${blogObj.author} added`,
-            color: 'green',
-          },
-          5000,
-        ),
-      );
-    } catch (e) {
-      dispatch(
-        setNotification(
-          {
-            message: `blog ${blogObj.title} due to: ${e.response.data.error}`,
-            color: 'red',
-          },
-          5000,
-        ),
-      );
-    }
   };
 
   return (
@@ -86,7 +61,7 @@ const App = () => {
             </p>
           </section>
           <ToggleComponent buttonLabel='create new blog' ref={blogFormRef}>
-            <BlogForm createBlog={createBlog} />
+            <BlogForm blogFormRef={blogFormRef} />
           </ToggleComponent>
           <BlogList />
         </main>

@@ -3,18 +3,26 @@ import { useDispatch } from 'react-redux';
 
 import { useField } from '../hooks';
 
-const BlogForm = () => {
+import { createNew } from '../reducers/blogsReducer';
+import { setNotification } from '../reducers/notificationReducer';
+
+const BlogForm = ({ blogFormRef }) => {
   const dispatch = useDispatch();
 
   const [title, resetTitle] = useField('text');
   const [author, resetAuthor] = useField('text');
   const [url, resetUrl] = useField('url');
 
-  const handleCreateBlog = (blogObj) => {
+  const handleCreateBlog = (event) => {
     blogFormRef.current.toggleVisibility();
 
+    event.preventDefault();
+    const blogObj = { title: title.value, author: author.value, url: url.value };
     try {
       dispatch(createNew(blogObj));
+      resetTitle();
+      resetAuthor();
+      resetUrl();
       dispatch(
         setNotification(
           {
