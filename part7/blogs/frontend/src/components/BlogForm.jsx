@@ -1,5 +1,6 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
+import { Button, TextField } from '@mui/material';
 
 import { useField } from '../hooks';
 
@@ -17,7 +18,11 @@ const BlogForm = ({ blogFormRef }) => {
     blogFormRef.current.toggleVisibility();
 
     event.preventDefault();
-    const blogObj = { title: title.value, author: author.value, url: url.value };
+    const blogObj = {
+      title: title.value,
+      author: author.value,
+      url: url.value,
+    };
     try {
       dispatch(createNew(blogObj));
       resetTitle();
@@ -29,8 +34,8 @@ const BlogForm = ({ blogFormRef }) => {
             message: `a new blog ${blogObj.title} by ${blogObj.author} added`,
             color: 'green',
           },
-          5000,
-        ),
+          5000
+        )
       );
     } catch (e) {
       dispatch(
@@ -39,8 +44,8 @@ const BlogForm = ({ blogFormRef }) => {
             message: `blog ${blogObj.title} due to: ${e.response.data.error}`,
             color: 'red',
           },
-          5000,
-        ),
+          5000
+        )
       );
     }
   };
@@ -51,29 +56,35 @@ const BlogForm = ({ blogFormRef }) => {
       <section>
         <form onSubmit={handleCreateBlog}>
           <div>
-            <label htmlFor='title'>
-              Title:
-              {' '}
-              <input id='title' name='title' {...title} />
-            </label>
+            <TextField
+              variant='filled'
+              label='Title'
+              id='title'
+              name='title'
+              {...title}
+            />
           </div>
           <div>
-            <label htmlFor='author'>
-              Author:
-              {' '}
-              <input id='author' name='author' {...author} />
-            </label>
+            <TextField
+              variant='filled'
+              label='Author'
+              id='author'
+              name='author'
+              {...author}
+            />
           </div>
           <div>
-            <label htmlFor='url'>
-              URL:
-              {' '}
-              <input id='url' name='url' {...url} />
-            </label>
+            <TextField
+              variant='filled'
+              label='URL'
+              id='url'
+              name='url'
+              {...url}
+            />
           </div>
-          <button id='create-blog' type='submit'>
+          <Button variant='contained' color='primary' type='submit'>
             Create
-          </button>
+          </Button>
         </form>
       </section>
     </>

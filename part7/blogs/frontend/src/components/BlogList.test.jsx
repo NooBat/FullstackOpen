@@ -3,7 +3,7 @@ import '@testing-library/jest-dom/extend-expect';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import Blog from './Blog';
+import Blog from './BlogList';
 
 describe('<Blog /> is rendered correctly and updated correctly', () => {
   test("initially only blog's title and author are rendered", () => {

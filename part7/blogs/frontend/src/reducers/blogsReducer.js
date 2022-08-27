@@ -9,7 +9,8 @@ const blogSlice = createSlice({
   initialState: [],
   reducers: {
     appendBlog(state, { payload }) {
-      state.push(payload).sort(sortByLikes);
+      state.push(payload);
+      state.sort(sortByLikes);
     },
     updateBlog(state, { payload }) {
       const updatedBlog = payload;
@@ -50,4 +51,9 @@ export const update = (blogToUpdate) => async (dispatch) => {
 export const deleteBlog = (id) => async (dispatch) => {
   await blogService.deleteBlog(id);
   dispatch(removeBlog(id));
+};
+
+export const createComment = (id, comment) => async (dispatch) => {
+  const commentedBlog = await blogService.commentBlog(id, comment);
+  dispatch(updateBlog(commentedBlog));
 };

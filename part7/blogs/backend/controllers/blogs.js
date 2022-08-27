@@ -37,6 +37,7 @@ blogsRouter.post('/', userExtractor, async (request, response) => {
     url,
     user: user._id,
     likes: likes || 0,
+    comments: [],
   });
 
   const savedBlog = await blog.save();
@@ -52,6 +53,24 @@ blogsRouter.post('/', userExtractor, async (request, response) => {
       },
     })
   );
+});
+
+blogsRouter.post('/:id/comments', async (request, response) => {
+  const { comment } = request.body;
+  console.log(request.params.id);
+
+  const blogById = await Blog.findById(request.params.id).populate({
+    path: 'user',
+    select: {
+      name: true,
+      username: true,
+    },
+  });
+
+  blogById.comments = blogById.comments.concat(comment);
+  await blogById.save();
+
+  response.status(201).json(blogById);
 });
 
 blogsRouter.delete('/:id', userExtractor, async (request, response) => {

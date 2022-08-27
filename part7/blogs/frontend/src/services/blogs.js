@@ -1,8 +1,8 @@
-import axios from "axios";
+import axios from 'axios';
 
-import userService from "./user";
+import userService from './user';
 
-const baseUrl = "/api/blogs";
+const baseUrl = '/api/blogs';
 
 async function getAll() {
   const response = await axios.get(baseUrl);
@@ -32,9 +32,15 @@ async function deleteBlog(id) {
   return response.data;
 }
 
+async function commentBlog(id, comment) {
+  const response = await axios.post(`${baseUrl}/${id}/comments`, comment);
+  return response.data;
+}
+
 export default {
   getAll,
   create,
   update,
   deleteBlog,
+  commentBlog,
 };

@@ -15,6 +15,6 @@ export const { initializeWith } = slice.actions;
 export default slice.reducer;
 
 export const initializeUsers = () => async (dispatch) => {
-  const response = await userService.getAll();
-  dispatch(initializeWith(response.data));
+  const users = await userService.getAll();
+  dispatch(initializeWith(users));
 };

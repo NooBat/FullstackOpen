@@ -4,11 +4,7 @@ module.exports = {
     es2021: true,
     'jest/globals': true,
   },
-  extends: [
-    'plugin:react/recommended',
-    'airbnb',
-    'plugin:prettier/recommended',
-  ],
+  extends: ['plugin:react/recommended', 'airbnb', 'prettier'],
   overrides: [],
   parserOptions: {
     ecmaVersion: 'latest',
@@ -16,8 +12,7 @@ module.exports = {
   },
   plugins: ['react', 'jest'],
   rules: {
-    quotes: ['error', 'single', { avoidEscape: true }],
-    'jsx-quotes': ['error', 'prefer-single'],
+    'react/jsx-props-no-spreading': 0,
     'react/prop-types': 0,
     'react/function-component-definition': [
       2,
