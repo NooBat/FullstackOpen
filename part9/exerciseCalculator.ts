@@ -17,20 +17,19 @@ const parseArguments = (args: Array<string>): ExerciseValues => {
   if (args.length < 4) throw new Error('Not enough arguments');
   const dailyHour: Array<number> = args.slice(3).map((str) => Number(str));
 
-  for (const num of dailyHour) {
-    if (isNaN(num)) {
+  dailyHour.forEach((num) => {
+    if (Number.isNaN(num)) {
       throw new Error('Provided values were not numbers!');
     }
-  }
+  });
 
-  if (!isNaN(Number(args[2]))) {
+  if (!Number.isNaN(Number(args[2]))) {
     return {
       dailyHour,
       target: Number(args[2]),
     };
-  } else {
-    throw new Error('Provided values were not numbers!');
   }
+  throw new Error('Provided values were not numbers!');
 };
 
 const exerciseCalculator = (dailyHour: number[], target: number): Result => {
@@ -70,7 +69,7 @@ try {
 } catch (error: unknown) {
   let errorMessage = 'Something bad happened.';
   if (error instanceof Error) {
-    errorMessage += ' Error: ' + error.message;
+    errorMessage = `${errorMessage} Error: ${error.message}`;
   }
   console.log(errorMessage);
 }
