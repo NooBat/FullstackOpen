@@ -11,7 +11,12 @@ const NewBook = ({ show }) => {
   const [genres, setGenres] = useState([]);
 
   const [addBook] = useMutation(ADD_BOOK, {
-    refetchQueries: [{ query: ALL_AUTHORS }, { query: ALL_BOOKS }],
+    refetchQueries: [{ query: ALL_AUTHORS }],
+    update: (cache, response) => {
+      cache.updateQuery({ query: ALL_BOOKS }, ({ allBooks }) => ({
+        allBooks: allBooks.concat(response.data.addBook),
+      }));
+    },
   });
 
   if (!show) {
@@ -32,7 +37,7 @@ const NewBook = ({ show }) => {
         title,
         published: Number(published),
         author,
-        genres: genres.concat(genre),
+        genres,
       },
     });
   };

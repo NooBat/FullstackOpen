@@ -4,21 +4,22 @@ import { useState } from 'react';
 import { ALL_AUTHORS, EDIT_AUTHOR } from '../queries';
 
 const Authors = ({ show }) => {
-  const [name, setName] = useState('choose author');
+  const [name, setName] = useState('');
   const [born, setBorn] = useState('');
+  const [changeAuthor] = useMutation(EDIT_AUTHOR);
+  const result = useQuery(ALL_AUTHORS);
 
   if (!show) {
     return null;
   }
 
-  const [changeAuthor] = useMutation(EDIT_AUTHOR);
-  const result = useQuery(ALL_AUTHORS);
-
   if (result.loading) {
     return <div>loading...</div>;
   }
 
-  const authors = result.data.allAuthors;
+  const authors = [...result.data.allAuthors].sort(
+    (a, b) => b.bookCount - a.bookCount
+  );
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -41,11 +42,11 @@ const Authors = ({ show }) => {
             <th>born</th>
             <th>books</th>
           </tr>
-          {authors.map((a) => (
-            <tr key={a.name}>
-              <td>{a.name}</td>
-              <td>{a.born}</td>
-              <td>{a.bookCount}</td>
+          {authors.map((author) => (
+            <tr key={author.name}>
+              <td>{author.name}</td>
+              <td>{author.born}</td>
+              <td>{author.bookCount}</td>
             </tr>
           ))}
         </tbody>
@@ -55,9 +56,12 @@ const Authors = ({ show }) => {
         <form onSubmit={handleSubmit}>
           <div>
             <select
-              value={name}
+              defaultValue='default'
               onChange={({ target }) => setName(target.value)}
             >
+              <option value='default' disabled>
+                choose author
+              </option>
               {authors.map((author) => (
                 <option key={author.name} value={author.name}>
                   {author.name}

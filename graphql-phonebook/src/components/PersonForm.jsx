@@ -10,9 +10,13 @@ const PersonForm = ({ setError }) => {
   const [phoneField, resetPhoneField] = useField('text');
 
   const [createPerson] = useMutation(ADD_PERSON, {
-    refetchQueries: [{ query: ALL_PERSONS }],
     onError: (error) => {
       setError(error.graphQLErrors[0].message);
+    },
+    update: (cache, response) => {
+      cache.updateQuery({ query: ALL_PERSONS }, ({ allPersons }) => ({
+        allPersons: allPersons.concat(response.data.addPerson),
+      }));
     },
   });
 
@@ -28,7 +32,7 @@ const PersonForm = ({ setError }) => {
         name: nameField.value,
         street: streetField.value,
         city: cityField.value,
-        phone: phoneField.value,
+        phone: phoneField.value.length > 0 ? phoneField.value : undefined,
       },
     });
   };
