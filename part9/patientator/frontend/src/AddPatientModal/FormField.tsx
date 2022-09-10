@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
-import { ErrorMessage, Field, FieldProps, FormikProps } from 'formik';
 import {
-  Select,
   FormControl,
+  Input,
+  InputLabel,
   MenuItem,
+  Select,
   TextField as TextFieldMUI,
   Typography,
-  InputLabel,
-} from '@material-ui/core';
-import Input from '@material-ui/core/Input';
+} from '@mui/material';
+import { ErrorMessage, Field, FieldProps, FormikProps } from 'formik';
+import { useState } from 'react';
 import { Diagnosis, Gender } from '../types';
 
 // structure of a single option

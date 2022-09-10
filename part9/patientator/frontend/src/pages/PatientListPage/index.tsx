@@ -7,7 +7,7 @@ import {
   TableHead,
   TableRow,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
 import axios from 'axios';
 import React from 'react';
 import { Link } from 'react-router-dom';
@@ -81,7 +81,7 @@ const PatientListPage = () => {
                 <TableCell>{patient.gender}</TableCell>
                 <TableCell>{patient.occupation}</TableCell>
                 <TableCell>
-                  <HealthRatingBar showText={false} rating={1} />
+                  <HealthRatingBar showText rating={1} />
                 </TableCell>
               </TableRow>
             ) : null
