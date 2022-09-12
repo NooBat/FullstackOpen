@@ -7,7 +7,7 @@ import {
   TableHead,
   TableRow,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
 import axios from 'axios';
 import React from 'react';
 import { Link } from 'react-router-dom';
@@ -16,7 +16,7 @@ import AddPatientModal from '../../AddPatientModal';
 import { PatientFormValues } from '../../AddPatientModal/AddPatientForm';
 import HealthRatingBar from '../../components/HealthRatingBar';
 import { apiBaseUrl } from '../../constants';
-import { useStateValue } from '../../state';
+import { addPatient, useStateValue } from '../../state';
 import { Patient } from '../../types';
 
 const PatientListPage = () => {
@@ -38,7 +38,7 @@ const PatientListPage = () => {
         `${apiBaseUrl}/patients`,
         values
       );
-      dispatch({ type: 'ADD_PATIENT', payload: newPatient });
+      dispatch(addPatient(newPatient));
       closeModal();
     } catch (e: unknown) {
       if (axios.isAxiosError(e)) {

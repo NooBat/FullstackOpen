@@ -4,6 +4,7 @@ import { Action, State } from '../types';
 
 const initialState: State = {
   patients: {},
+  diagnoses: {},
 };
 
 export const StateContext = createContext<[State, React.Dispatch<Action>]>([

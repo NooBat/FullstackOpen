@@ -26,6 +26,23 @@
       "error",
       { "argsIgnorePattern": "^_" }
     ],
+    "import/order": [
+      "error",
+      {
+        "newlines-between": "always",
+        "groups": [
+          "builtin",
+          "external",
+          "internal",
+          "parent",
+          "sibling",
+          "index",
+          "object",
+          "type"
+        ],
+        "warnOnUnassignedImports": true
+      }
+    ],
     "no-case-declarations": "off"
   }
 }

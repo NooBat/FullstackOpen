@@ -1,27 +1,27 @@
-import React, { useState } from 'react';
-import { ErrorMessage, Field, FieldProps, FormikProps } from 'formik';
 import {
-  Select,
   FormControl,
+  Input,
+  InputLabel,
   MenuItem,
+  Select,
   TextField as TextFieldMUI,
   Typography,
-  InputLabel,
-} from '@material-ui/core';
-import Input from '@material-ui/core/Input';
-import { Diagnosis, Gender } from '../types';
+} from '@mui/material';
+import { ErrorMessage, Field, FieldProps, FormikProps } from 'formik';
+import { useState } from 'react';
 
-// structure of a single option
-export type GenderOption = {
-  value: Gender;
-  label: string;
-};
+import {
+  Diagnosis,
+  GenderOption,
+  HealthRatingOption,
+  TypeOption,
+} from '../types';
 
 // props for select field component
 type SelectFieldProps = {
   name: string;
   label: string;
-  options: GenderOption[];
+  options: GenderOption[] | TypeOption[] | HealthRatingOption[];
 };
 
 const FormikSelect = ({ field, ...props }: FieldProps) => (
