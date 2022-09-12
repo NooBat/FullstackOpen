@@ -9,6 +9,7 @@
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:import/recommended",
+    "plugin:import/typescript",
     "plugin:react/recommended",
     "prettier"
   ],
@@ -32,6 +33,7 @@
     "import/order": [
       "error",
       {
+        "newlines-between": "always",
         "groups": [
           "builtin",
           "external",
@@ -42,8 +44,7 @@
           "object",
           "type"
         ],
-        "distinctGroup": false,
-        "newlines-between": "always"
+        "warnOnUnassignedImports": true
       }
     ],
     "import/prefer-default-export": "off",
@@ -73,7 +74,8 @@
     "react/jsx-props-no-spreading": 0,
     "react/prop-types": 0,
     "react/react-in-jsx-scope": 0,
-    "react/require-default-props": 0
+    "react/require-default-props": 0,
+    "sort-imports": ["error", { "ignoreDeclarationSort": true }]
   },
   "settings": {
     "import/parsers": {

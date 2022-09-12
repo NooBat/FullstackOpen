@@ -1,8 +1,8 @@
 import { Button, Grid } from '@mui/material';
 import { Field, Form, Formik } from 'formik';
 
-import { Gender, Patient } from '../types';
-import { GenderOption, SelectField, TextField } from './FormField';
+import { Gender, GenderOption, Patient } from '../types';
+import { SelectField, TextField } from '../components/FormField';
 
 /*
  * use type Patient, but omit id and entries,

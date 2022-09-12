@@ -16,7 +16,7 @@ import AddPatientModal from '../../AddPatientModal';
 import { PatientFormValues } from '../../AddPatientModal/AddPatientForm';
 import HealthRatingBar from '../../components/HealthRatingBar';
 import { apiBaseUrl } from '../../constants';
-import { useStateValue } from '../../state';
+import { addPatient, useStateValue } from '../../state';
 import { Patient } from '../../types';
 
 const PatientListPage = () => {
@@ -38,7 +38,7 @@ const PatientListPage = () => {
         `${apiBaseUrl}/patients`,
         values
       );
-      dispatch({ type: 'ADD_PATIENT', payload: newPatient });
+      dispatch(addPatient(newPatient));
       closeModal();
     } catch (e: unknown) {
       if (axios.isAxiosError(e)) {
@@ -81,7 +81,7 @@ const PatientListPage = () => {
                 <TableCell>{patient.gender}</TableCell>
                 <TableCell>{patient.occupation}</TableCell>
                 <TableCell>
-                  <HealthRatingBar showText rating={1} />
+                  <HealthRatingBar showText={false} rating={1} />
                 </TableCell>
               </TableRow>
             ) : null

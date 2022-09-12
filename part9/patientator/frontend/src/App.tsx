@@ -3,11 +3,12 @@ import { Button, Container, Divider, Typography } from '@mui/material';
 import axios from 'axios';
 import React from 'react';
 import { BrowserRouter as Router, Link, Route, Routes } from 'react-router-dom';
+
 import { apiBaseUrl } from './constants';
 import PatientListPage from './pages/PatientListPage';
 import PatientPage from './pages/PatientPage';
-import { useStateValue } from './state';
-import { Patient } from './types';
+import { setDiagnosisList, setPatientList, useStateValue } from './state';
+import { Diagnosis, Patient } from './types';
 
 const App = () => {
   const [, dispatch] = useStateValue();
@@ -19,12 +20,25 @@ const App = () => {
         const { data: patientListFromApi } = await axios.get<Patient[]>(
           `${apiBaseUrl}/patients`
         );
-        dispatch({ type: 'SET_PATIENT_LIST', payload: patientListFromApi });
+        dispatch(setPatientList(patientListFromApi));
       } catch (e) {
         console.error(e);
       }
     };
+
+    const fetchDiagnosisList = async () => {
+      try {
+        const { data: diagnosisListFromApi } = await axios.get<Diagnosis[]>(
+          `${apiBaseUrl}/diagnoses`
+        );
+        dispatch(setDiagnosisList(diagnosisListFromApi));
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
     void fetchPatientList();
+    void fetchDiagnosisList();
   }, [dispatch]);
 
   return (
