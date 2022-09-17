@@ -5,20 +5,33 @@
     "node": true
   },
   "extends": [
-    "plugin:react/recommended",
     "airbnb",
+    "airbnb-typescript",
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:import/recommended",
+    "plugin:import/typescript",
+    "plugin:react/recommended",
     "prettier",
     "plugin:@next/next/recommended"
   ],
+  "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "ecmaFeatures": {
-      "jsx": true
-    },
-    "ecmaVersion": "latest",
-    "sourceType": "module"
+    "project": "./tsconfig.json"
   },
   "plugins": ["import", "react"],
   "rules": {
+    "@typescript-eslint/explicit-function-return-type": 0,
+    "@typescript-eslint/explicit-module-boundary-types": 0,
+    "@typescript-eslint/no-explicit-any": 1,
+    "@typescript-eslint/no-unsafe-member-access": 0,
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_"
+      }
+    ],
+    "@typescript-eslint/semi": ["error"],
     "import/order": [
       "error",
       {
@@ -74,5 +87,19 @@
     "react/react-in-jsx-scope": 0,
     "react/require-default-props": 0,
     "sort-imports": ["error", { "ignoreDeclarationSort": true }]
+  },
+  "settings": {
+    "import/parsers": {
+      "@typescript-eslint/parser": [".ts", ".tsx"]
+    },
+    "import/resolver": {
+      "typescript": {
+        "alwaysTryTypes": true // always try to resolve types under `<root>@types` directory even it doesn't contain any source code, like `@types/unist`
+      }
+    },
+    "react": {
+      "pragma": "React",
+      "version": "detect"
+    }
   }
 }
