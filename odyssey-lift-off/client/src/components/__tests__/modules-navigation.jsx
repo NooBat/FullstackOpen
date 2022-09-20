@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { render, cleanup } from '../../utils/test-utils';
+import { cleanup, render } from '../../utils/test-utils.test';
 import ModuleNav from '../modules-navigation';
 
 const mockModule = {

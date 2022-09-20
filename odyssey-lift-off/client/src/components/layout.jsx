@@ -1,7 +1,8 @@
 import React from 'react';
+
 import styled from '@emotion/styled';
 
-import { widths, unit } from '../styles';
+import { unit, widths } from '../styles';
 
 import Footer from './footer';
 import Header from './header';

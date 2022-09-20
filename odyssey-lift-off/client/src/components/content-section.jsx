@@ -1,7 +1,8 @@
 import React from 'react';
+
 import styled from '@emotion/styled';
 
-import { widths, colors } from '../styles';
+import { colors, widths } from '../styles';
 
 /**
  * Content Section component renders content (mainly text/mdown based)

@@ -2,7 +2,7 @@ module.exports = {
   env: {
     browser: true,
     es2021: true,
-    'jest/globals': true,
+    jest: true,
   },
   extends: ['plugin:react/recommended', 'airbnb', 'prettier'],
   overrides: [],
@@ -14,7 +14,7 @@ module.exports = {
       modules: true,
     },
   },
-  plugins: ['react', 'jest'],
+  plugins: ['react', 'import'],
   rules: {
     'import/order': [
       'error',
@@ -30,6 +30,21 @@ module.exports = {
           'object',
           'type',
         ],
+        pathGroups: [
+          {
+            pattern: 'react*',
+            group: 'external',
+            position: 'before',
+            distinctGroup: true,
+          },
+          {
+            pattern: '@*/**',
+            group: 'external',
+            position: 'before',
+            distinctGroup: false,
+          },
+        ],
+        pathGroupsExcludedImportTypes: [],
         warnOnUnassignedImports: true,
       },
     ],
@@ -61,5 +76,6 @@ module.exports = {
     'react/prop-types': 0,
     'react/react-in-jsx-scope': 0,
     'react/require-default-props': 0,
+    'sort-imports': ['error', { ignoreDeclarationSort: true }],
   },
 };

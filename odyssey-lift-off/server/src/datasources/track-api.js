@@ -1,0 +1,30 @@
+const { RESTDataSource } = require('apollo-datasource-rest');
+
+class TrackAPI extends RESTDataSource {
+  constructor() {
+    super();
+    this.baseURL = 'https://odyssey-lift-off-rest-api.herokuapp.com/';
+  }
+
+  getTracksForHomepage() {
+    return this.get('tracks');
+  }
+
+  getAuthor(authorId) {
+    return this.get(`author/${encodeURIComponent(authorId)}`);
+  }
+
+  getTrack(trackId) {
+    return this.get(`track/${encodeURIComponent(trackId)}`);
+  }
+
+  getTrackModules(trackId) {
+    return this.get(`track/${encodeURIComponent(trackId)}/modules`);
+  }
+
+  getModule(moduleId) {
+    return this.get(`module/${encodeURIComponent(moduleId)}`);
+  }
+}
+
+module.exports = TrackAPI;

@@ -1,14 +1,15 @@
 import React from 'react';
+
 import styled from '@emotion/styled';
 import { Link } from '@reach/router';
 
 import {
-  colors,
   Button,
-  IconRun,
-  IconView,
-  IconTime,
   IconBook,
+  IconRun,
+  IconTime,
+  IconView,
+  colors,
 } from '../styles';
 import { humanReadableTimeFromSeconds } from '../utils/helpers';
 

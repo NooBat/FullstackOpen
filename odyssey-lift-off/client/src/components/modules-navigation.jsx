@@ -1,8 +1,9 @@
 import React from 'react';
+
 import styled from '@emotion/styled';
 import { Link } from '@reach/router';
 
-import { colors, IconArrowRight, IconDoubleArrowRight } from '../styles';
+import { IconArrowRight, IconDoubleArrowRight, colors } from '../styles';
 import { humanReadableTimeFromSeconds } from '../utils/helpers';
 
 /**
