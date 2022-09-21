@@ -12,7 +12,7 @@ export default function Pages() {
     <Router primary={false} component={Fragment}>
       <Tracks path='/' />
       <Track path='/track/:trackId' />
-      <Module path='/module/:moduleId' />
+      <Module path='track/:trackId/module/:moduleId' />
     </Router>
   );
 }

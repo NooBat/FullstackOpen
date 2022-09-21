@@ -20,7 +20,8 @@
   "name": "catstronauts-server-complete",
   "private": true,
   "scripts": {
-    "start": "nodemon src/index"
+    "dev": "nodemon src/index",
+    "start": "node src/index"
   },
   "version": "1.0.0"
 }

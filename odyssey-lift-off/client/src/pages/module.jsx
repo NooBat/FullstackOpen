@@ -1,21 +1,31 @@
 import { gql, useQuery } from '@apollo/client';
 
-import { Layout, QueryResult } from '../components';
+import { Layout, ModuleDetail, QueryResult } from '../components';
 
-const GET_MODULE = gql`
-  query getModule($moduleId: ID!) {
+const GET_MODULE_AND_PARENT_TRACK = gql`
+  query getModuleAndParentTrack($moduleId: ID!, $trackId: ID!) {
     module(id: $moduleId) {
       id
       title
       content
       videoUrl
     }
+    track(id: $trackId) {
+      id
+      title
+      modules {
+        id
+        title
+        length
+      }
+    }
   }
 `;
 
-const Module = ({ moduleId }) => {
-  const { loading, error, data } = useQuery(GET_MODULE, {
+const Module = ({ trackId, moduleId }) => {
+  const { loading, error, data } = useQuery(GET_MODULE_AND_PARENT_TRACK, {
     variables: {
+      trackId,
       moduleId,
     },
   });
@@ -23,7 +33,7 @@ const Module = ({ moduleId }) => {
   return (
     <Layout>
       <QueryResult loading={loading} error={error} data={data}>
-        {data?.module}
+        <ModuleDetail module={data?.module} track={data?.track} />
       </QueryResult>
     </Layout>
   );
