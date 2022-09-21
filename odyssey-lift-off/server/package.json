@@ -1,0 +1,27 @@
+{
+  "author": "Raphael Terrier @R4ph-t",
+  "dependencies": {
+    "apollo-datasource-rest": "^3.7.0",
+    "apollo-server": "^3.10.2",
+    "graphql": "^16.6.0"
+  },
+  "description": "back-end demo app for Apollo's lift-off course",
+  "devDependencies": {
+    "dotenv": "^8.2.0",
+    "eslint": "^8.23.1",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
+    "nodemon": "^2.0.20",
+    "prettier": "^2.7.1"
+  },
+  "license": "MIT",
+  "main": "src/index.js",
+  "name": "catstronauts-server-complete",
+  "private": true,
+  "scripts": {
+    "dev": "nodemon src/index",
+    "start": "node src/index"
+  },
+  "version": "1.0.0"
+}
