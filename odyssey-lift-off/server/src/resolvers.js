@@ -38,6 +38,10 @@ const resolvers = {
       dataSources.trackAPI.getAuthor(authorId),
     modules: ({ id }, _, { dataSources }) =>
       dataSources.trackAPI.getTrackModules(id),
+    durationInSeconds: ({ length }) => length / 60,
+  },
+  Module: {
+    durationInSeconds: ({ length }) => length / 60,
   },
 };
 
