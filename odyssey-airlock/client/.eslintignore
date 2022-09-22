@@ -1,0 +1,8 @@
+node_modules
+public
+.cache
+
+package.json
+package-lock.json
+.eslintrc.js
+.prettierrc
