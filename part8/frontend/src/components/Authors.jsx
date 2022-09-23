@@ -34,7 +34,6 @@ const Authors = ({ show }) => {
     <QueryResult loading={loading} error={error} data={data}>
       <h2>authors</h2>
       <section>
-        {' '}
         <table>
           <tbody>
             <tr>

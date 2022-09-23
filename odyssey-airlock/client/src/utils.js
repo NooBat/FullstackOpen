@@ -1,10 +1,10 @@
 import DatePicker from 'react-datepicker';
 import areIntervalsOverlapping from 'date-fns/areIntervalsOverlapping';
 import format from 'date-fns/format';
-import { gql, useQuery } from '@apollo/client';
-import { useState } from 'react';
+import {gql, useQuery} from '@apollo/client';
+import {useState} from 'react';
 
-export const GET_USER = gql`s
+export const GET_USER = gql`
   query GetMyProfile {
     me {
       id
@@ -23,18 +23,18 @@ export const GET_USER = gql`s
 export function useUser() {
   const [user, setUser] = useState();
 
-  const { loading, error } = useQuery(GET_USER, {
+  const {loading, error} = useQuery(GET_USER, {
     fetchPolicy: 'no-cache',
-    onCompleted: ({ me }) => {
-      setUser({ ...me });
-    },
+    onCompleted: ({me}) => {
+      setUser({...me});
+    }
   });
 
   return {
     user,
     setUser,
     loading,
-    error,
+    error
   };
 }
 
@@ -61,7 +61,7 @@ export const HOST_LISTINGS = gql`
   ${LISTING_FRAGMENT}
 `;
 
-export const getNextDate = (date) => {
+export const getNextDate = date => {
   const nextDate = new Date(date).setDate(date.getDate() + 1);
   return new Date(nextDate);
 };
@@ -81,7 +81,7 @@ export const getDatePickerProps = ({
     minDate: today,
     startDate,
     endDate,
-    onChange: (date) => {
+    onChange: date => {
       setStartDate(date);
 
       // match end date with start date if start date was changed to be farther in the future than the current end date
@@ -89,14 +89,14 @@ export const getDatePickerProps = ({
         setEndDate(new Date(getNextDate(date)));
       }
     },
-    ...props,
+    ...props
   };
 };
 
 // need to normalize Date time (data from getDatesToExclude times are all 00:00:00)
 // from Fri Nov 05 2021 11:38:24 GMT-0600 (Mountain Daylight Time)
 // to Fri Nov 05 2021 00:00:00 GMT-0600 (Mountain Daylight Time)
-const normalizeDate = (date) => {
+const normalizeDate = date => {
   return new Date(format(date, 'MMM d yyyy'));
 };
 
@@ -118,7 +118,7 @@ export const getDatesToExclude = (startDate, endDate) => {
   // that should be excluded
   return {
     dates: [...datesArr, end],
-    stringDates: [...stringDatesArr, end.toString()],
+    stringDates: [...stringDatesArr, end.toString()]
   };
 };
 
@@ -141,11 +141,11 @@ export const getFirstValidDate = (invalidDates, checkInDate) => {
 
 // check if rangeToCheck (check in and check out dates) overlaps with an existing booking
 export const areDatesValid = (bookings, rangeToCheck) => {
-  return bookings.find((booking) =>
+  return bookings.find(booking =>
     areIntervalsOverlapping(
       {
         start: new Date(booking.checkInDate),
-        end: new Date(booking.checkOutDate),
+        end: new Date(booking.checkOutDate)
       },
       rangeToCheck
     )

@@ -1,11 +1,11 @@
 import Layout from '../layouts/Layout';
 import ListingForm from '../components/ListingForm';
 import React from 'react';
-import { Button } from '@chakra-ui/react';
-import { HOST_LISTINGS, LISTING_FRAGMENT } from '../utils';
-import { IoArrowBackOutline } from 'react-icons/io5';
-import { Link, useHistory } from 'react-router-dom';
-import { gql } from '@apollo/client';
+import {Button} from '@chakra-ui/react';
+import {HOST_LISTINGS, LISTING_FRAGMENT} from '../utils';
+import {IoArrowBackOutline} from 'react-icons/io5';
+import {Link, useHistory} from 'react-router-dom';
+import {gql} from '@apollo/client';
 
 export const CREATE_LISTING = gql`
   mutation CreateListingMutation($listing: CreateListingInput!) {
@@ -29,7 +29,7 @@ export default function CreateListing() {
   const history = useHistory();
   return (
     <Layout>
-      <Button as={Link} to='/listings' leftIcon={<IoArrowBackOutline />} mb='4'>
+      <Button as={Link} to="/listings" leftIcon={<IoArrowBackOutline />} mb="4">
         Back to listings
       </Button>
       <ListingForm
@@ -40,17 +40,17 @@ export default function CreateListing() {
           locationType: '',
           photoThumbnail: '',
           amenities: [],
-          costPerNight: 100,
+          costPerNight: 100
         }}
         mutation={CREATE_LISTING}
         mutationOptions={{
           onCompleted: () => {
             history.push('/listings');
           },
-          update: (cache, { data }) => {
+          update: (cache, {data}) => {
             // update the cache to add our new listing
             // https://www.apollographql.com/docs/react/api/react/hooks/#update
-            const query = cache.readQuery({ query: HOST_LISTINGS });
+            const query = cache.readQuery({query: HOST_LISTINGS});
 
             if (query?.hostListings) {
               cache.writeQuery({
@@ -58,12 +58,12 @@ export default function CreateListing() {
                 data: {
                   hostListings: [
                     ...query.hostListings,
-                    data.createListing.listing,
-                  ],
-                },
+                    data.createListing.listing
+                  ]
+                }
               });
             }
-          },
+          }
         }}
       />
     </Layout>

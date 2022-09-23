@@ -2,8 +2,8 @@ import Bookings from '../components/Bookings';
 import Layout from '../layouts/Layout';
 import QueryResult from '../components/QueryResult';
 import React from 'react';
-import { gql, useQuery } from '@apollo/client';
-import { useParams } from 'react-router-dom';
+import {gql, useQuery} from '@apollo/client';
+import {useParams} from 'react-router-dom';
 
 export const HOST_BOOKINGS = gql`
   query GetBookingsForHostListing(
@@ -61,19 +61,19 @@ export const HOST_BOOKINGS = gql`
 `;
 
 export default function HostBookings() {
-  const { id } = useParams();
-  const { loading, error, data } = useQuery(HOST_BOOKINGS, {
+  const {id} = useParams();
+  const {loading, error, data} = useQuery(HOST_BOOKINGS, {
     variables: {
       listingId: id,
       upcomingStatus: 'UPCOMING',
-      currentStatus: 'CURRENT',
-    },
+      currentStatus: 'CURRENT'
+    }
   });
 
   return (
     <Layout>
       <QueryResult loading={loading} error={error} data={data}>
-        {({ upcomingBookings, currentBooking, listing }) => {
+        {({upcomingBookings, currentBooking, listing}) => {
           const bookings = [...upcomingBookings, ...currentBooking];
 
           return <Bookings title={listing.title} bookings={bookings} />;

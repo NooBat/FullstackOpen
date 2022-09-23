@@ -4,13 +4,19 @@ import { useMutation } from '@apollo/client';
 
 import { ADD_BOOK, ALL_AUTHORS, ALL_BOOKS } from '../queries';
 
-const NewBook = ({ show }) => {
+const NewBook = ({ show, handleNotification }) => {
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [published, setPublished] = useState('');
   const [genre, setGenre] = useState('');
   const [genres, setGenres] = useState([]);
-  const [addBook] = useMutation(ADD_BOOK);
+  const [addBook] = useMutation(ADD_BOOK, {
+    onError: (error) =>
+      handleNotification({
+        message: error.graphQLErrors[0].message,
+        severity: 'error',
+      }),
+  });
 
   if (!show) {
     return null;

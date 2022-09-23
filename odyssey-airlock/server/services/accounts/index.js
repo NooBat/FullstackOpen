@@ -1,4 +1,5 @@
 const express = require('express');
+
 const app = express();
 const port = process.env.PORT || 4011;
 
@@ -37,11 +38,15 @@ app.patch('/user/:userId', async (req, res) => {
 
   // properties to update
 
-  user.profileDescription = req.body.profileDescription ? req.body.profileDescription : user.profileDescription;
+  user.profileDescription = req.body.profileDescription
+    ? req.body.profileDescription
+    : user.profileDescription;
 
   user.name = req.body.name ? req.body.name : user.name;
 
-  user.profilePicture = req.body.profilePicture ? req.body.profilePicture : user.profilePicture;
+  user.profilePicture = req.body.profilePicture
+    ? req.body.profilePicture
+    : user.profilePicture;
 
   await user.save();
 
