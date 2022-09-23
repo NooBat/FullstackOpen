@@ -1,5 +1,7 @@
-const { ApolloServer } = require('apollo-server');
-const typeDefs = require('./schema');
+const { ApolloServer, gql } = require('apollo-server');
+const { readFileSync } = require('fs');
+
+const typeDefs = gql(readFileSync('./schema.graphql', { encoding: 'utf-8' }));
 const resolvers = require('./resolvers');
 
 const server = new ApolloServer({

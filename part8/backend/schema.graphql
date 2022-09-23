@@ -1,3 +1,4 @@
+"Query"
 type Query {
   "Query to fetch the number of Books"
   bookCount: Int!
@@ -9,6 +10,7 @@ type Query {
   allAuthors: [Author!]!
 }
 
+"Mutation"
 type Mutation {
   "Add a new Book"
   addBook(
@@ -16,9 +18,43 @@ type Mutation {
     author: String!
     published: Int!
     genres: [String!]!
-  ): Book
+  ): AddBookResponse!
   "Edit the birth year of an Author"
-  editAuthor(name: String!, setBornTo: Int!): Author
+  editAuthor(name: String!, setBornTo: Int!): EditAuthorResponse!
+}
+
+"Response for all mutation operations"
+interface MutationResponse {
+  "Similar to HTTP status code, represents the status of the mutation"
+  code: Int!
+  "Indicates whether the mutation was successful"
+  success: Boolean!
+  "Human-readable message for the UI"
+  message: String!
+}
+
+"Response for addBook mutation"
+type AddBookResponse implements MutationResponse {
+  "Similar to HTTP status code, represents the status of the mutation"
+  code: Int!
+  "Indicates whether the mutation was successful"
+  success: Boolean!
+  "Human-readable message for the UI"
+  message: String!
+  "Added Book"
+  book: Book
+}
+
+"Response for editAuthor mutation"
+type EditAuthorResponse implements MutationResponse {
+  "Similar to HTTP status code, represents the status of the mutation"
+  code: Int!
+  "Indicates whether the mutation was successful"
+  success: Boolean!
+  "Human-readable message for the UI"
+  message: String!
+  "Updated Author"
+  author: Author
 }
 
 "A Book"

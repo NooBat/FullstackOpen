@@ -1,4 +1,6 @@
 const { v1: uuid } = require('uuid');
+const Book = require('./models/Book');
+const Author = require('./models/Author');
 
 const authors = [
   {
@@ -94,22 +96,20 @@ const books = [
 
 const resolvers = {
   Query: {
-    bookCount: () => books.length,
+    bookCount: () => Book.countDocuments(),
     authorCount: () => authors.length,
-    allBooks: (_, { author, genre }) => {
+    allBooks: async (_, { author, genre }) => {
       if (!author && !genre) {
-        return books;
-      } else if (!genre) {
-        return books.filter((book) => book.author === author);
+        return Book.find({});
       } else if (!author) {
-        return books.filter((book) => book.genres.includes(genre));
+        return Book.find({ $in });
       }
 
       return books.filter(
         (book) => book.author === author && book.genres.includes(genre)
       );
     },
-    allAuthors: () => authors,
+    allAuthors: async () => Author.find({}),
   },
   Mutation: {
     addBook: (_, { title, published, author, genres }) => {
