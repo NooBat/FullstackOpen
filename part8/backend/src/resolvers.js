@@ -102,12 +102,24 @@ const resolvers = {
       if (!author && !genre) {
         return Book.find({});
       } else if (!author) {
-        return Book.find({ $in });
+        return Book.find({ genres: { $in: [genre] } });
       }
 
-      return books.filter(
-        (book) => book.author === author && book.genres.includes(genre)
-      );
+      const selectedAuthor = await Author.findOne({ name: author });
+
+      if (!selectedAuthor) {
+        const newAuthor = Author({
+          name: author,
+          born: null,
+        });
+
+        await newAuthor.save();
+      }
+
+      return Book.find({
+        author: selectedAuthor._id,
+        genres: { $in: [genre] },
+      });
     },
     allAuthors: async () => Author.find({}),
   },
