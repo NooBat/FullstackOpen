@@ -16,6 +16,7 @@ module.exports = {
       extends: 'plugin:@graphql-eslint/schema-recommended',
       rules: {
         '@graphql-eslint/description-style': 0,
+        '@graphql-eslint/no-typename-prefix': 0,
         '@graphql-eslint/strict-id-in-types': [
           'error',
           { exceptions: { suffixes: ['Response'] } },

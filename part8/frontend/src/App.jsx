@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Alert } from '@mui/material';
 
@@ -10,6 +10,17 @@ import { useNotification } from './hooks';
 const App = () => {
   const [page, setPage] = useState('authors');
   const [notification, setNotification] = useNotification();
+  const [token, setToken] = useState();
+
+  useEffect(() => {
+    const t = localStorage.getItem('library-user-token');
+    if (t) {
+      setToken(t);
+    }
+  }, []);
+
+  if (!token) {
+  }
 
   return (
     <div>

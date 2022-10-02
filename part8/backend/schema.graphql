@@ -8,6 +8,8 @@ type Query {
   allBooks(author: String, genre: String): [Book!]!
   "Query to fetch all Authors"
   allAuthors: [Author!]!
+  "Query to fetch the current logged in user"
+  me: User
 }
 
 "Mutation"
@@ -21,6 +23,14 @@ type Mutation {
   ): AddBookResponse!
   "Edit the birth year of an Author"
   editAuthor(name: String!, setBornTo: Int!): EditAuthorResponse!
+  "Create a new user"
+  createUser(
+    username: String!
+    password: String!
+    favouriteGenre: String!
+  ): User
+  "Log in with a valid username and password"
+  login(username: String!, password: String!): Token
 }
 
 "Response for all mutation operations"
@@ -79,4 +89,16 @@ type Author {
   born: Int
   "The Author's number of written books"
   bookCount: Int!
+}
+
+"A User"
+type User {
+  username: String!
+  favouriteGenre: String!
+  id: ID!
+}
+
+"Token for each User"
+type Token {
+  value: String!
 }
