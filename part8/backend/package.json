@@ -1,23 +1,32 @@
 {
-  "name": "backend",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "author": "",
-  "license": "ISC",
   "dependencies": {
     "apollo-server": "^3.10.2",
-    "graphql": "^16.6.0"
+    "bcrypt": "^5.0.1",
+    "dotenv": "^16.0.2",
+    "graphql": "^16.6.0",
+    "graphql-config": "^4.3.5",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.6.1",
+    "uuid": "^9.0.0"
   },
+  "description": "",
   "devDependencies": {
+    "@graphql-eslint/eslint-plugin": "^3.10.7",
     "eslint": "^8.23.1",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "^2.26.0",
     "nodemon": "^2.0.20",
     "prettier": "^2.7.1"
-  }
+  },
+  "license": "ISC",
+  "main": "index.js",
+  "name": "backend",
+  "scripts": {
+    "dev": "nodemon src/index",
+    "start": "node src/index",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "1.0.0"
 }

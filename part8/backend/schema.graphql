@@ -1,0 +1,104 @@
+"Query"
+type Query {
+  "Query to fetch the number of Books"
+  bookCount: Int!
+  "Query to fetch the number of Authors"
+  authorCount: Int!
+  "Query to fetch all Books"
+  allBooks(author: String, genre: String): [Book!]!
+  "Query to fetch all Authors"
+  allAuthors: [Author!]!
+  "Query to fetch the current logged in user"
+  me: User
+}
+
+"Mutation"
+type Mutation {
+  "Add a new Book"
+  addBook(
+    title: String!
+    author: String!
+    published: Int!
+    genres: [String!]!
+  ): AddBookResponse!
+  "Edit the birth year of an Author"
+  editAuthor(name: String!, setBornTo: Int!): EditAuthorResponse!
+  "Create a new user"
+  createUser(
+    username: String!
+    password: String!
+    favouriteGenre: String!
+  ): User
+  "Log in with a valid username and password"
+  login(username: String!, password: String!): Token
+}
+
+"Response for all mutation operations"
+interface MutationResponse {
+  "Similar to HTTP status code, represents the status of the mutation"
+  code: Int!
+  "Indicates whether the mutation was successful"
+  success: Boolean!
+  "Human-readable message for the UI"
+  message: String!
+}
+
+"Response for addBook mutation"
+type AddBookResponse implements MutationResponse {
+  "Similar to HTTP status code, represents the status of the mutation"
+  code: Int!
+  "Indicates whether the mutation was successful"
+  success: Boolean!
+  "Human-readable message for the UI"
+  message: String!
+  "Added Book"
+  book: Book
+}
+
+"Response for editAuthor mutation"
+type EditAuthorResponse implements MutationResponse {
+  "Similar to HTTP status code, represents the status of the mutation"
+  code: Int!
+  "Indicates whether the mutation was successful"
+  success: Boolean!
+  "Human-readable message for the UI"
+  message: String!
+  "Updated Author"
+  author: Author
+}
+
+"A Book"
+type Book {
+  id: ID!
+  "Title of the Book"
+  title: String!
+  "The published year of the Book"
+  published: Int!
+  "The Author of the Book"
+  author: Author!
+  "The Book's genres"
+  genres: [String!]!
+}
+
+"An Author is the writer of Books. Each Author can have multiple Books"
+type Author {
+  id: ID!
+  "The Author's name"
+  name: String!
+  "The Author's birth year"
+  born: Int
+  "The Author's number of written books"
+  bookCount: Int!
+}
+
+"A User"
+type User {
+  username: String!
+  favouriteGenre: String!
+  id: ID!
+}
+
+"Token for each User"
+type Token {
+  value: String!
+}
