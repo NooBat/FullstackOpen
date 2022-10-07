@@ -41,7 +41,7 @@ module.exports = {
             pattern: '@*/**',
             group: 'external',
             position: 'before',
-            distinctGroup: false,
+            // distinctGroup: false,
           },
         ],
         pathGroupsExcludedImportTypes: [],

@@ -3,14 +3,14 @@ import { useState } from 'react';
 import { gql, useMutation } from '@apollo/client';
 
 const LOGIN = gql`
-  Mutation login($username: String!, $password: String!) {
+  mutation login($username: String!, $password: String!) {
     login(username: $username, password: $password) {
       value
     }
   }
 `;
 
-const LoginForm = ({ handleNotification }) => {
+const LoginForm = ({ show, handleNotification, setToken }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [login] = useMutation(LOGIN);
@@ -28,16 +28,21 @@ const LoginForm = ({ handleNotification }) => {
           message: error.graphQLErrors[0].message,
           severity: 'error',
         }),
+      onCompleted: (data) => {
+        setToken(data?.login?.value);
+        localStorage.setItem('library-user-token', data?.login?.value);
+      },
     });
 
     setUsername('');
     setPassword('');
   };
 
-  return (
+  return show ? (
     <form onSubmit={handleLogin}>
       <div>
         <label htmlFor='username'>
+          username:{' '}
           <input
             type='text'
             name='username'
@@ -48,6 +53,7 @@ const LoginForm = ({ handleNotification }) => {
       </div>
       <div>
         <label htmlFor='password'>
+          password:{' '}
           <input
             type='password'
             name='password'
@@ -58,7 +64,7 @@ const LoginForm = ({ handleNotification }) => {
       </div>
       <button type='submit'>log in</button>
     </form>
-  );
+  ) : null;
 };
 
 export default LoginForm;
