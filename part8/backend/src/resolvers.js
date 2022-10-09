@@ -1,6 +1,7 @@
 const { UserInputError } = require('apollo-server');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { v1: uuid } = require('uuid');
 const Book = require('./models/Book');
 const Author = require('./models/Author');
 const User = require('./models/User');
@@ -125,6 +126,13 @@ const resolvers = {
       }).populate('author');
     },
     allAuthors: async () => Author.find({}),
+    allGenres: async () => {
+      const books = await Book.find({});
+      const dictionary = books.reduce((dict, book) => {
+        book.genres.forEach((genre) => {});
+        return dict;
+      }, {});
+    },
     me: (_, __, { currentUser }) => currentUser,
   },
   Mutation: {
