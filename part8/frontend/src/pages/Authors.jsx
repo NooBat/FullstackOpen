@@ -3,8 +3,7 @@ import { useState } from 'react';
 import { useMutation, useQuery } from '@apollo/client';
 
 import { ALL_AUTHORS, EDIT_AUTHOR } from '../queries';
-
-import QueryResult from './QueryResult';
+import QueryResult from '../components/QueryResult';
 
 const Authors = ({ show }) => {
   const [name, setName] = useState('default');

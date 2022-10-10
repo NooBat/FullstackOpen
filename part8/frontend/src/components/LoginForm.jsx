@@ -1,44 +1,12 @@
-import { useState } from 'react';
-
-import { gql, useMutation } from '@apollo/client';
-
-const LOGIN = gql`
-  mutation login($username: String!, $password: String!) {
-    login(username: $username, password: $password) {
-      value
-    }
-  }
-`;
-
-const LoginForm = ({ show, handleNotification, setToken }) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [login] = useMutation(LOGIN);
-
-  const handleLogin = async (event) => {
-    event.preventDefault();
-
-    login({
-      variables: {
-        username,
-        password,
-      },
-      onError: (error) =>
-        handleNotification({
-          message: error.graphQLErrors[0].message,
-          severity: 'error',
-        }),
-      onCompleted: (data) => {
-        setToken(data?.login?.value);
-        localStorage.setItem('library-user-token', data?.login?.value);
-      },
-    });
-
-    setUsername('');
-    setPassword('');
-  };
-
-  return show ? (
+const LoginForm = ({
+  show,
+  handleLogin,
+  username,
+  setUsername,
+  password,
+  setPassword,
+}) =>
+  show ? (
     <form onSubmit={handleLogin}>
       <div>
         <label htmlFor='username'>
@@ -65,6 +33,5 @@ const LoginForm = ({ show, handleNotification, setToken }) => {
       <button type='submit'>log in</button>
     </form>
   ) : null;
-};
 
 export default LoginForm;

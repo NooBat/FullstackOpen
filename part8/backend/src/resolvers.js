@@ -129,11 +129,25 @@ const resolvers = {
     allGenres: async () => {
       const books = await Book.find({});
       const dictionary = books.reduce((dict, book) => {
-        book.genres.forEach((genre) => {});
+        book.genres.forEach((genre) => {
+          if (!dict[genre]) {
+            Object.assign(dict, { [genre]: 1 });
+          }
+        });
+
         return dict;
       }, {});
+
+      return Object.keys(dictionary).map((genre) => ({
+        name: genre,
+        id: uuid(),
+      }));
     },
-    me: (_, __, { currentUser }) => currentUser,
+    me: (_, __, { currentUser }) => ({
+      id: toString(currentUser._id),
+      username: currentUser.username,
+      favouriteGenre: { id: uuid(), name: currentUser.favouriteGenre },
+    }),
   },
   Mutation: {
     addBook: async (

@@ -3,17 +3,20 @@ import { useEffect, useState } from 'react';
 import { Alert } from '@mui/material';
 import { gql, useQuery } from '@apollo/client';
 
-import Authors from './components/Authors';
-import Books from './components/Books';
-import NewBook from './components/NewBook';
+import Authors from './pages/Authors';
+import Books from './pages/Books';
+import NewBook from './pages/NewBook';
 import { useNotification } from './hooks';
 import LoginForm from './components/LoginForm';
+import Recommendations from './pages/Recommendations';
 
 const ME = gql`
   query currentUser {
     me {
       username
-      favouriteGenre
+      favouriteGenre {
+        name
+      }
     }
   }
 `;
@@ -22,7 +25,7 @@ const App = () => {
   const [page, setPage] = useState('authors');
   const [notification, setNotification] = useNotification();
   const [token, setToken] = useState(null);
-  const [, setCurrentUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
   const { error, data } = useQuery(ME, {
     skip: !token,
   });
@@ -69,6 +72,9 @@ const App = () => {
             <button type='button' onClick={() => setPage('add')}>
               add book
             </button>
+            <button type='button' onClick={() => setPage('recommend')}>
+              recommend
+            </button>
             <button
               type='button'
               onClick={() => {
@@ -88,6 +94,10 @@ const App = () => {
       <Authors show={page === 'authors'} handleNotification={setNotification} />
       <Books show={page === 'books'} handleNotification={setNotification} />
       <NewBook show={page === 'add'} handleNotification={setNotification} />
+      <Recommendations
+        show={currentUser && page === 'recommend'}
+        favouriteGenre={currentUser?.favouriteGenre?.name}
+      />
       <LoginForm
         show={page === 'login'}
         handleNotification={setNotification}
