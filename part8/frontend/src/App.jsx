@@ -7,7 +7,7 @@ import Authors from './pages/Authors';
 import Books from './pages/Books';
 import NewBook from './pages/NewBook';
 import { useNotification } from './hooks';
-import LoginForm from './components/LoginForm';
+import Login from './components/LoginForm';
 import Recommendations from './pages/Recommendations';
 
 const ME = gql`
@@ -98,12 +98,12 @@ const App = () => {
         show={currentUser && page === 'recommend'}
         favouriteGenre={currentUser?.favouriteGenre?.name}
       />
-      <LoginForm
+      <Login
         show={page === 'login'}
         handleNotification={setNotification}
         setToken={(t) => {
           setToken(t);
-          setPage('authors');
+          setPage('recommend');
         }}
       />
     </div>

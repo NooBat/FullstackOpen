@@ -17,6 +17,10 @@ const Login = ({ show, handleNotification, setToken }) => {
   const [password, setPassword] = useState('');
   const [login] = useMutation(LOGIN);
 
+  if (!show) {
+    return null;
+  }
+
   const handleLogin = async (event) => {
     event.preventDefault();
 
@@ -31,6 +35,7 @@ const Login = ({ show, handleNotification, setToken }) => {
           severity: 'error',
         }),
       onCompleted: (data) => {
+        console.log(data);
         setToken(data?.login?.value);
         localStorage.setItem('library-user-token', data?.login?.value);
       },
@@ -42,7 +47,6 @@ const Login = ({ show, handleNotification, setToken }) => {
 
   return (
     <LoginForm
-      show={show}
       handleLogin={handleLogin}
       username={username}
       setUsername={setUsername}
