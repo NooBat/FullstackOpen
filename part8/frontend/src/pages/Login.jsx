@@ -35,7 +35,6 @@ const Login = ({ show, handleNotification, setToken }) => {
           severity: 'error',
         }),
       onCompleted: (data) => {
-        console.log(data);
         setToken(data?.login?.value);
         localStorage.setItem('library-user-token', data?.login?.value);
       },

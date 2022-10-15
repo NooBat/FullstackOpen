@@ -1,7 +1,6 @@
 const { UserInputError } = require('apollo-server');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { v1: uuid } = require('uuid');
 const Book = require('./models/Book');
 const Author = require('./models/Author');
 const User = require('./models/User');
@@ -138,16 +137,9 @@ const resolvers = {
         return dict;
       }, {});
 
-      return Object.keys(dictionary).map((genre) => ({
-        name: genre,
-        id: uuid(),
-      }));
+      return Object.keys(dictionary);
     },
-    me: (_, __, { currentUser }) => ({
-      id: toString(currentUser._id),
-      username: currentUser.username,
-      favouriteGenre: { id: uuid(), name: currentUser.favouriteGenre },
-    }),
+    me: (_, __, { currentUser }) => currentUser,
   },
   Mutation: {
     addBook: async (

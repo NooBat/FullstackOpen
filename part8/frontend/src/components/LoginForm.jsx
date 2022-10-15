@@ -13,9 +13,8 @@ const LoginForm = ({
           type='text'
           name='username'
           value={username}
-          onChange={() => {
-            // setUsername(target.value);
-            console.log(setUsername);
+          onChange={({ target }) => {
+            setUsername(target.value);
           }}
         />
       </label>

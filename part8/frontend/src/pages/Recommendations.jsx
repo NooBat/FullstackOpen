@@ -1,13 +1,14 @@
 import { useQuery } from '@apollo/client';
 
-import { ALL_BOOKS } from '../queries';
 import QueryResult from '../components/QueryResult';
+import { ALL_BOOKS } from '../queries';
 
 const Recommendations = ({ show, favouriteGenre }) => {
   const { loading, error, data } = useQuery(ALL_BOOKS, {
     variables: {
       genre: favouriteGenre,
     },
+    skip: !(show && favouriteGenre),
   });
 
   if (!show) {

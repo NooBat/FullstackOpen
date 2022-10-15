@@ -7,16 +7,14 @@ import Authors from './pages/Authors';
 import Books from './pages/Books';
 import NewBook from './pages/NewBook';
 import { useNotification } from './hooks';
-import Login from './components/LoginForm';
+import Login from './pages/Login';
 import Recommendations from './pages/Recommendations';
 
 const ME = gql`
   query currentUser {
     me {
       username
-      favouriteGenre {
-        name
-      }
+      favouriteGenre
     }
   }
 `;
@@ -96,7 +94,7 @@ const App = () => {
       <NewBook show={page === 'add'} handleNotification={setNotification} />
       <Recommendations
         show={currentUser && page === 'recommend'}
-        favouriteGenre={currentUser?.favouriteGenre?.name}
+        favouriteGenre={currentUser?.favouriteGenre}
       />
       <Login
         show={page === 'login'}

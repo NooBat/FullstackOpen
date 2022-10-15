@@ -27,6 +27,7 @@ const httpLink = new HttpLink({ uri: 'http://localhost:4000' });
 const client = new ApolloClient({
   link: authLink.concat(httpLink),
   cache: new InMemoryCache(),
+  connectToDevTools: true,
 });
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

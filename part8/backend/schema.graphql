@@ -9,7 +9,7 @@ type Query {
   "Query to fetch all Authors"
   allAuthors: [Author!]!
   "Query to fetch all Genres"
-  allGenres: [Genre!]!
+  allGenres: [String!]!
   "Query to fetch the current logged in user"
   me: User
 }
@@ -79,7 +79,7 @@ type Book {
   "The Author of the Book"
   author: Author!
   "The Book's genres"
-  genres: [Genre!]!
+  genres: [String!]!
 }
 
 "An Author is the writer of Books. Each Author can have multiple Books"
@@ -96,17 +96,11 @@ type Author {
 "A User"
 type User {
   username: String!
-  favouriteGenre: Genre!
+  favouriteGenre: String!
   id: ID!
 }
 
 "Token for each User"
 type Token {
   value: String!
-}
-
-"A Genre represent a group of Books with the same aim"
-type Genre {
-  id: ID!
-  name: String!
 }

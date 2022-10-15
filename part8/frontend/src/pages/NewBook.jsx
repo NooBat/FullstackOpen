@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { useMutation } from '@apollo/client';
 
-import { ADD_BOOK, ALL_AUTHORS, ALL_BOOKS } from '../queries';
+import { ADD_BOOK, ALL_AUTHORS, ALL_BOOKS, ALL_GENRES } from '../queries';
 
 const NewBook = ({ show, handleNotification }) => {
   const [title, setTitle] = useState('');
@@ -11,11 +11,42 @@ const NewBook = ({ show, handleNotification }) => {
   const [genre, setGenre] = useState('');
   const [genres, setGenres] = useState([]);
   const [addBook] = useMutation(ADD_BOOK, {
-    onError: (error) =>
+    onError: (error) => {
       handleNotification({
-        message: error.graphQLErrors[0].message,
+        message:
+          error.graphQLErrors[0]?.message ||
+          error.clientErrors[0]?.message ||
+          'Unknown error',
         severity: 'error',
-      }),
+      });
+    },
+    onCompleted: (data) => {
+      handleNotification({
+        message: data.addBook.message,
+        severity: 'success',
+      });
+    },
+    refetchQueries: [{ query: ALL_BOOKS }],
+    update: (cache, { data }) => {
+      cache.updateQuery({ query: ALL_AUTHORS }, ({ allAuthors }) => {
+        if (allAuthors.find((a) => a.id === data?.addBook?.book?.author.id)) {
+          return { allAuthors };
+        }
+
+        return {
+          allAuthors: allAuthors.concat(data?.addBook?.author),
+        };
+      });
+      cache.updateQuery({ query: ALL_GENRES }, ({ allGenres }) => {
+        data?.addBook?.book?.genres.forEach((g) => {
+          if (!allGenres.find((cachedGenre) => g === cachedGenre)) {
+            allGenres.push(g);
+          }
+        });
+
+        return { allGenres };
+      });
+    },
   });
 
   if (!show) {
@@ -31,22 +62,6 @@ const NewBook = ({ show, handleNotification }) => {
         author,
         published: Number(published),
         genres,
-      },
-      update: (cache, { data }) => {
-        cache.updateQuery({ query: ALL_BOOKS }, ({ allBooks }) => ({
-          allBooks: allBooks.concat(data?.addBook),
-        }));
-        cache.updateQuery({ query: ALL_AUTHORS }, ({ allAuthors }) => {
-          if (allAuthors.find((a) => a.id === data?.addBook?.author.id)) {
-            return {
-              allAuthors,
-            };
-          }
-
-          return {
-            allAuthors: allAuthors.concat(data?.addBook?.author),
-          };
-        });
       },
     });
 
