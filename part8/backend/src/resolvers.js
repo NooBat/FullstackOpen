@@ -127,7 +127,7 @@ const resolvers = {
         genres: { $in: [genre] },
       }).populate('author');
     },
-    allAuthors: async () => Author.find({}),
+    allAuthors: async () => Author.find({}).populate('books'),
     allGenres: async () => {
       const books = await Book.find({});
       const dictionary = books.reduce((dict, book) => {
@@ -296,10 +296,7 @@ const resolvers = {
     },
   },
   Author: {
-    bookCount: async ({ id }) => {
-      const allBooksByAuthor = await Book.find({ author: id });
-      return allBooksByAuthor.length;
-    },
+    bookCount: async ({ books }) => books.length,
   },
 };
 

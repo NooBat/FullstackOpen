@@ -1,7 +1,12 @@
 import { useEffect, useState } from 'react';
 
 import { Alert } from '@mui/material';
-import { gql, useQuery } from '@apollo/client';
+import {
+  gql,
+  useApolloClient,
+  useQuery,
+  useSubscription,
+} from '@apollo/client';
 
 import Authors from './pages/Authors';
 import Books from './pages/Books';
@@ -9,6 +14,8 @@ import NewBook from './pages/NewBook';
 import { useNotification } from './hooks';
 import Login from './pages/Login';
 import Recommendations from './pages/Recommendations';
+import { ALL_AUTHORS, ALL_BOOKS, ALL_GENRES, BOOK_ADDED } from './queries';
+import { uniqByAttributes } from './utils';
 
 const ME = gql`
   query currentUser {
@@ -26,6 +33,26 @@ const App = () => {
   const [currentUser, setCurrentUser] = useState();
   const { error, data } = useQuery(ME, {
     skip: !token,
+  });
+  const currClient = useApolloClient();
+
+  useSubscription(BOOK_ADDED, {
+    onSubscriptionData: ({ subscriptionData, client }) => {
+      const addedBook = subscriptionData.data.bookAdded;
+      setNotification({
+        message: `${addedBook.title} added`,
+        severity: 'success',
+      });
+      client.cache.updateQuery({ query: ALL_BOOKS }, ({ allBooks }) => ({
+        allBooks: uniqByAttributes(allBooks.concat(addedBook), 'title'),
+      }));
+      client.cache.updateQuery({ query: ALL_AUTHORS }, ({ allAuthors }) => ({
+        allAuthors: uniqByAttributes(allAuthors.concat(addedBook.author), 'id'),
+      }));
+      client.cache.updateQuery({ query: ALL_GENRES }, ({ allGenres }) => ({
+        allGenres: uniqByAttributes(allGenres.concat(...addedBook.genres)),
+      }));
+    },
   });
 
   useEffect(() => {
@@ -78,6 +105,7 @@ const App = () => {
               onClick={() => {
                 setToken(undefined);
                 localStorage.removeItem('library-user-token');
+                currClient.resetStore();
               }}
             >
               log out

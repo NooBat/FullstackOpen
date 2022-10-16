@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useMutation } from '@apollo/client';
 
 import { ADD_BOOK, ALL_AUTHORS, ALL_BOOKS, ALL_GENRES } from '../queries';
+import { uniqByAttributes } from '../utils';
 
 const NewBook = ({ show, handleNotification }) => {
   const [title, setTitle] = useState('');
@@ -12,6 +13,7 @@ const NewBook = ({ show, handleNotification }) => {
   const [genres, setGenres] = useState([]);
   const [addBook] = useMutation(ADD_BOOK, {
     onError: (error) => {
+      console.log(error);
       handleNotification({
         message:
           error.graphQLErrors[0]?.message ||
@@ -20,34 +22,24 @@ const NewBook = ({ show, handleNotification }) => {
         severity: 'error',
       });
     },
-    onCompleted: (data) => {
-      handleNotification({
-        message: data.addBook.message,
-        severity: 'success',
-      });
-    },
     update: (cache, { data }) => {
       cache.updateQuery({ query: ALL_BOOKS }, ({ allBooks }) => ({
-        allBooks: allBooks.concat(data?.addBook?.book),
+        allBooks: uniqByAttributes(
+          allBooks.concat(data?.addBook?.book),
+          'title'
+        ),
       }));
-      cache.updateQuery({ query: ALL_AUTHORS }, ({ allAuthors }) => {
-        if (allAuthors.find((a) => a.id === data?.addBook?.book?.author.id)) {
-          return undefined;
-        }
-
-        return {
-          allAuthors: allAuthors.concat(data?.addBook?.book?.author),
-        };
-      });
-      cache.updateQuery({ query: ALL_GENRES }, ({ allGenres }) => {
-        data?.addBook?.book?.genres.forEach((g) => {
-          if (!allGenres.find((cachedGenre) => g === cachedGenre)) {
-            allGenres.push(g);
-          }
-        });
-
-        return { allGenres };
-      });
+      cache.updateQuery({ query: ALL_AUTHORS }, ({ allAuthors }) => ({
+        allAuthors: uniqByAttributes(
+          allAuthors.concat(data?.addBook?.book?.author),
+          'id'
+        ),
+      }));
+      cache.updateQuery({ query: ALL_GENRES }, ({ allGenres }) => ({
+        allGenres: uniqByAttributes(
+          allGenres.concat(...data.addBook.book.genres)
+        ),
+      }));
     },
   });
 
