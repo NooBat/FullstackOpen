@@ -1,3 +1,4 @@
+const { PubSub } = require('graphql-subscriptions');
 const { UserInputError } = require('apollo-server');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -5,6 +6,8 @@ const Book = require('./models/Book');
 const Author = require('./models/Author');
 const User = require('./models/User');
 require('dotenv').config();
+
+const pubsub = new PubSub();
 
 // const authors = [
 //   {
@@ -124,7 +127,21 @@ const resolvers = {
         genres: { $in: [genre] },
       }).populate('author');
     },
-    allAuthors: async () => Author.find({}),
+    allAuthors: async () => Author.find({}).populate('books'),
+    allGenres: async () => {
+      const books = await Book.find({});
+      const dictionary = books.reduce((dict, book) => {
+        book.genres.forEach((genre) => {
+          if (!dict[genre]) {
+            Object.assign(dict, { [genre]: 1 });
+          }
+        });
+
+        return dict;
+      }, {});
+
+      return Object.keys(dictionary);
+    },
     me: (_, __, { currentUser }) => currentUser,
   },
   Mutation: {
@@ -174,6 +191,8 @@ const resolvers = {
           invalidArgs: { title, published, author, genres },
         });
       }
+
+      pubsub.publish('BOOK_ADDED', { bookAdded: savedBook });
 
       return {
         code: 200,
@@ -271,11 +290,13 @@ const resolvers = {
       return { value: token };
     },
   },
-  Author: {
-    bookCount: async ({ id }) => {
-      const allBooksByAuthor = await Book.find({ author: id });
-      return allBooksByAuthor.length;
+  Subscription: {
+    bookAdded: {
+      subscribe: () => pubsub.asyncIterator('BOOK_ADDED'),
     },
+  },
+  Author: {
+    bookCount: async ({ books }) => books.length,
   },
 };
 

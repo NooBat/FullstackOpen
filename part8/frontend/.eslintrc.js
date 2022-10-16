@@ -32,19 +32,17 @@ module.exports = {
         ],
         pathGroups: [
           {
-            pattern: 'react',
+            pattern: 'react*',
             group: 'external',
             position: 'before',
-            distinctGroup: true,
           },
           {
             pattern: '@*/**',
             group: 'external',
             position: 'before',
-            // distinctGroup: false,
           },
         ],
-        pathGroupsExcludedImportTypes: [],
+        pathGroupsExcludedImportTypes: ['react'],
         warnOnUnassignedImports: true,
       },
     ],
