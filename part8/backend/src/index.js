@@ -6,6 +6,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
+const { WebSocketServer } = require('ws');
+const { useServer } = require('graphql-ws/lib/use/ws');
 
 const resolvers = require('./resolvers');
 const typeDefs = require('./schema');
@@ -29,23 +31,39 @@ const start = async () => {
 
   const schema = makeExecutableSchema({ typeDefs, resolvers });
 
+  const wsServer = new WebSocketServer({
+    server: httpServer,
+    path: '/',
+  });
+  const serverCleanup = useServer({ schema }, wsServer);
+
   const server = new ApolloServer({
     schema,
     context: async ({ req }) => {
       const auth = req ? req.headers.authorization : null;
-
-      if (auth && auth.startsWith('Bearer ')) {
-        const token = auth.substring(7);
-        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-
-        return {
-          currentUser: await User.findById(decodedToken.id),
-        };
+      if (auth && auth.toLowerCase().startsWith('bearer ')) {
+        const decodedToken = jwt.verify(
+          auth.substring(7),
+          process.env.JWT_SECRET
+        );
+        const currentUser = await User.findById(decodedToken.id);
+        return { currentUser };
       }
 
       return null;
     },
-    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+    plugins: [
+      ApolloServerPluginDrainHttpServer({ httpServer }),
+      {
+        async serverWillStart() {
+          return {
+            async drainServer() {
+              await serverCleanup.dispose();
+            },
+          };
+        },
+      },
+    ],
   });
 
   await server.start();

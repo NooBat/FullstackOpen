@@ -35,6 +35,11 @@ type Mutation {
   login(username: String!, password: String!): Token
 }
 
+"Subscription"
+type Subscription {
+  bookAdded: Book!
+}
+
 "Response for all mutation operations"
 interface MutationResponse {
   "Similar to HTTP status code, represents the status of the mutation"

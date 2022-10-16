@@ -1,3 +1,4 @@
+const { PubSub } = require('graphql-subscriptions');
 const { UserInputError } = require('apollo-server');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -5,6 +6,8 @@ const Book = require('./models/Book');
 const Author = require('./models/Author');
 const User = require('./models/User');
 require('dotenv').config();
+
+const pubsub = new PubSub();
 
 // const authors = [
 //   {
@@ -189,6 +192,8 @@ const resolvers = {
         });
       }
 
+      pubsub.publish('BOOK_ADDED', { bookAdded: savedBook });
+
       return {
         code: 200,
         message: `${title} added successfully`,
@@ -283,6 +288,11 @@ const resolvers = {
       );
 
       return { value: token };
+    },
+  },
+  Subscription: {
+    bookAdded: {
+      subscribe: () => pubsub.asyncIterator('BOOK_ADDED'),
     },
   },
   Author: {

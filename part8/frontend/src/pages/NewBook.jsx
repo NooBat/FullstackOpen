@@ -26,15 +26,17 @@ const NewBook = ({ show, handleNotification }) => {
         severity: 'success',
       });
     },
-    refetchQueries: [{ query: ALL_BOOKS }],
     update: (cache, { data }) => {
+      cache.updateQuery({ query: ALL_BOOKS }, ({ allBooks }) => ({
+        allBooks: allBooks.concat(data?.addBook?.book),
+      }));
       cache.updateQuery({ query: ALL_AUTHORS }, ({ allAuthors }) => {
         if (allAuthors.find((a) => a.id === data?.addBook?.book?.author.id)) {
-          return { allAuthors };
+          return undefined;
         }
 
         return {
-          allAuthors: allAuthors.concat(data?.addBook?.author),
+          allAuthors: allAuthors.concat(data?.addBook?.book?.author),
         };
       });
       cache.updateQuery({ query: ALL_GENRES }, ({ allGenres }) => {

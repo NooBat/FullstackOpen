@@ -6,7 +6,7 @@ import { ALL_BOOKS, ALL_GENRES } from '../queries';
 import QueryResult from '../components/QueryResult';
 
 const Books = ({ show }) => {
-  const [currentGenre, setCurrentGenre] = useState(null);
+  const [currentGenre, setCurrentGenre] = useState();
   const allBooksQuery = useQuery(ALL_BOOKS, {
     variables: {
       genre: currentGenre,
@@ -61,7 +61,7 @@ const Books = ({ show }) => {
           {genre}
         </button>
       ))}
-      <button type='button' onClick={() => setCurrentGenre(null)}>
+      <button type='button' onClick={() => setCurrentGenre(undefined)}>
         all genres
       </button>
     </QueryResult>

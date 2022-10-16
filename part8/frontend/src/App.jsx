@@ -22,8 +22,8 @@ const ME = gql`
 const App = () => {
   const [page, setPage] = useState('authors');
   const [notification, setNotification] = useNotification();
-  const [token, setToken] = useState(null);
-  const [currentUser, setCurrentUser] = useState(null);
+  const [token, setToken] = useState();
+  const [currentUser, setCurrentUser] = useState();
   const { error, data } = useQuery(ME, {
     skip: !token,
   });
@@ -76,7 +76,7 @@ const App = () => {
             <button
               type='button'
               onClick={() => {
-                setToken(null);
+                setToken(undefined);
                 localStorage.removeItem('library-user-token');
               }}
             >
@@ -94,7 +94,7 @@ const App = () => {
       <NewBook show={page === 'add'} handleNotification={setNotification} />
       <Recommendations
         show={currentUser && page === 'recommend'}
-        favouriteGenre={currentUser?.favouriteGenre}
+        favouriteGenre={currentUser ? currentUser.favouriteGenre : undefined}
       />
       <Login
         show={page === 'login'}
