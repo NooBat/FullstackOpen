@@ -12,7 +12,10 @@ const app = express();
 app.use(
   '/',
   cors<cors.CorsRequest>({
-    origin: ['https://studio.apollographql.com', 'http://localhost:3000'],
+    origin: [
+      'https://studio.apollographql.com',
+      'http://localhost:3000, https://transcendent-croquembouche-d4a213.netlify.app/',
+    ],
     credentials: true,
   })
 );
