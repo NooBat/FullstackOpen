@@ -60,8 +60,7 @@ router.post('/login', (req, res) => __awaiter(void 0, void 0, void 0, function* 
             shows: user.shows,
         };
         req.session.save();
-        console.log(req.session);
     }
-    return res.status(200).end();
+    return res.status(200).json(user);
 }));
 exports.default = router;
