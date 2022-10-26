@@ -12,7 +12,10 @@ import App from './App';
 import './index.css';
 
 const link = new HttpLink({
-  uri: 'http://localhost:4000',
+  uri:
+    process.env.NODE_ENV === 'production'
+      ? 'https://majestic-tiramisu-a800ab.netlify.app/'
+      : 'http://localhost:4000/login',
   credentials: 'include',
 });
 
