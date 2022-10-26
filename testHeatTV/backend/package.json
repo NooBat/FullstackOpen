@@ -40,7 +40,7 @@
   "name": "backend",
   "scripts": {
     "dev": "NODE_ENV=development ts-node-dev src/index.ts",
-    "start": "tsc && NODE_ENV=production node build/index.js",
+    "start": "tsc && cp src/config/serviceAccount.json build/config && cp src/graphql/schema.graphql build/graphql && NODE_ENV=production node build/index.js",
     "tsc": "tsc"
   },
   "version": "1.0.0"
