@@ -11,6 +11,7 @@ const uuid_1 = require("uuid");
 const config_1 = __importDefault(require("./env/config"));
 const loginRouter_1 = __importDefault(require("./routers/loginRouter"));
 const app = (0, express_1.default)();
+app.set('trust proxy', true);
 app.use('/', (0, cors_1.default)({
     origin: [
         'https://studio.apollographql.com',

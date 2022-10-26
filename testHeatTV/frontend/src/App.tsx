@@ -55,12 +55,7 @@ const App = () => {
       // Sign in with credential from the Google user.
       const userCred = await signInWithCredential(auth, credential);
       const token = await userCred.user.getIdToken();
-      await axios.post<void>(
-        process.env.NODE_ENV === 'production'
-          ? 'https://pacific-caverns-31987.herokuapp.com/'
-          : 'http://localhost:4000/login',
-        { token }
-      );
+      await axios.post<void>('http://localhost:4000/login', { token });
       const button = document.getElementById('signInButton');
       if (button) {
         button.style.display = 'none';
