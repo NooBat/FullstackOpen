@@ -3,6 +3,8 @@ import { readFileSync } from 'fs';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { IResolvers } from '@graphql-tools/utils';
 
+import { Context } from './types';
+
 const typeDefs = readFileSync(`${__dirname}/graphql/schema.graphql`, {
   encoding: 'utf-8',
 });
@@ -10,16 +12,11 @@ const typeDefs = readFileSync(`${__dirname}/graphql/schema.graphql`, {
 const resolvers: IResolvers = {
   Query: {
     helloWorld: (): string => 'Hello World',
-    currentUser: (_root, _args, context) => {
-      console.log(context.getSession(), 'in resolver');
-      console.log(context.getUser());
-      return context.getUser();
-    },
+    currentUser: (_root, _args, context: Context) => context.getUser(),
   },
   Mutation: {
-    sessionLogin: (_root, _args, context) => {
+    sessionLogout: (_root, _args, context: Context) => {
       context.logout();
-      return 'logged out';
     },
   },
 };

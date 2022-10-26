@@ -7,22 +7,21 @@ const connect_mongo_1 = __importDefault(require("connect-mongo"));
 const cors_1 = __importDefault(require("cors"));
 const express_1 = __importDefault(require("express"));
 const express_session_1 = __importDefault(require("express-session"));
-const passport_1 = __importDefault(require("passport"));
 const uuid_1 = require("uuid");
-const google_1 = require("./auth/google");
-const login_1 = __importDefault(require("./routes/login"));
+const config_1 = __importDefault(require("./env/config"));
+const loginRouter_1 = __importDefault(require("./routers/loginRouter"));
 const app = (0, express_1.default)();
 app.use('/', (0, cors_1.default)({
-    origin: 'https://studio.apollographql.com',
+    origin: ['https://studio.apollographql.com', 'http://localhost:3000'],
     credentials: true,
 }));
 app.use(express_1.default.json());
 app.use((0, express_session_1.default)({
-    genid: () => (0, uuid_1.v5)('sessionID', process.env.NAMESPACE_SECRET),
+    genid: () => (0, uuid_1.v5)('sessionID', config_1.default.NAMESPACE_SECRET),
     secret: process.env.NODE_ENV === 'production'
-        ? process.env.SESSION_SECRET
+        ? config_1.default.SESSION_SECRET
         : 'not a secret',
-    store: connect_mongo_1.default.create({ mongoUrl: process.env.MONGODB_URI }),
+    store: connect_mongo_1.default.create({ mongoUrl: config_1.default.MONGODB_URI }),
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -31,8 +30,5 @@ app.use((0, express_session_1.default)({
         httpOnly: false,
     },
 }));
-app.use(passport_1.default.initialize());
-app.use(passport_1.default.session());
-(0, google_1.passportConfig)();
-app.use(login_1.default);
+app.use(loginRouter_1.default);
 exports.default = app;

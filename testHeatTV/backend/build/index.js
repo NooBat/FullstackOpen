@@ -38,16 +38,16 @@ function startApolloServer() {
         });
         yield server.start();
         app_1.default.use((0, express4_1.expressMiddleware)(server, {
-            context: ({ req, res }) => __awaiter(this, void 0, void 0, function* () {
+            context: ({ req }) => __awaiter(this, void 0, void 0, function* () {
                 return ({
-                    getUser: () => req.session.user,
+                    getUser: () => {
+                        console.log(req.session.user, 'in context.getUser');
+                        return req.session.user;
+                    },
                     logout: () => {
                         req.session.destroy((err) => {
                             if (err) {
                                 console.log(err);
-                            }
-                            else {
-                                res.redirect('/');
                             }
                         });
                     },
