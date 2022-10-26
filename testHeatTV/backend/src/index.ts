@@ -32,18 +32,18 @@ async function startApolloServer() {
 
   app.use(
     expressMiddleware<Context>(server, {
-      context: async ({ req, res }): Promise<Context> => ({
-        getUser: () => req.session.user,
+      context: async ({ req }): Promise<Context> => ({
+        getUser: () => {
+          console.log(req.session.user, 'in context.getUser');
+          return req.session.user;
+        },
         logout: () => {
           req.session.destroy((err) => {
             if (err) {
               console.log(err);
-            } else {
-              res.redirect('/');
             }
           });
         },
-        getSession: () => req.session,
       }),
     })
   );

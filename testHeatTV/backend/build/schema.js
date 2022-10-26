@@ -11,5 +11,10 @@ const resolvers = {
         helloWorld: () => 'Hello World',
         currentUser: (_root, _args, context) => context.getUser(),
     },
+    Mutation: {
+        sessionLogout: (_root, _args, context) => {
+            context.logout();
+        },
+    },
 };
 exports.schema = (0, schema_1.makeExecutableSchema)({ typeDefs, resolvers });

@@ -2,11 +2,10 @@ import MongoStore from 'connect-mongo';
 import cors from 'cors';
 import express from 'express';
 import session from 'express-session';
-import passport from 'passport';
 import { v5 as uuid } from 'uuid';
 
-import { passportConfig } from './auth/google';
-import authRouter from './routes/login';
+import config from './env/config';
+import loginRouter from './routers/loginRouter';
 
 const app = express();
 
@@ -20,12 +19,12 @@ app.use(
 app.use(express.json());
 app.use(
   session({
-    genid: () => uuid('sessionID', process.env.NAMESPACE_SECRET as string),
+    genid: () => uuid('sessionID', config.NAMESPACE_SECRET as string),
     secret:
       process.env.NODE_ENV === 'production'
-        ? (process.env.SESSION_SECRET as string)
+        ? config.SESSION_SECRET
         : 'not a secret',
-    store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI as string }),
+    store: MongoStore.create({ mongoUrl: config.MONGODB_URI }),
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -35,11 +34,6 @@ app.use(
     },
   })
 );
-app.use(passport.initialize());
-app.use(passport.session());
-
-passportConfig();
-
-app.use(authRouter);
+app.use(loginRouter);
 
 export default app;

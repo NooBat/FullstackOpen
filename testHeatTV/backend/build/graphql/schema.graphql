@@ -4,22 +4,59 @@ type Query {
   searchShows: [Show!]
 }
 
+type Mutation {
+  sessionLogout: SessionLogoutResponse!
+}
+
+interface MutationResponse {
+  code: Int!
+  message: String!
+  success: Boolean!
+}
+
+interface SessionLogoutResponse implements MutationResponse {
+  code: Int!
+  message: String!
+  success: Boolean!
+}
+
 type User {
   provider: String!
   providerId: ID!
   id: ID!
-  firstName: String!
-  lastName: String!
-  displayName: String!
-  email: String!
-  photoUrl: String!
+  displayName: String
+  email: String
+  photoUrl: String
+  favoriteShows: [Show!]!
+}
+
+type Image {
+  medium: String!
+  original: String!
+}
+
+type Schedule {
+  time: String!
+  days: [String!]!
+}
+
+type Network {
+  name: String!
+  officialSite: String!
 }
 
 type Show {
   id: ID!
   name: String!
+  image: Image!
+  summary: String!
+  officialSite: String!
+  averageRating: Float!
   type: String!
   language: String!
   genres: [String!]!
   status: String!
+  runtime: Int!
+  schedule: Schedule!
+  network: Network!
 }

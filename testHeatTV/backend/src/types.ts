@@ -1,5 +1,3 @@
-import { SessionData } from 'express-session';
-
 export enum TypesOfShow {
   Animation = 0,
   Scripted = 1,
@@ -16,7 +14,6 @@ export interface Show {
 }
 
 export interface Context {
-  getUser?: () => Express.User | undefined;
-  logout?: () => void;
-  getSession?: () => SessionData & Partial<SessionData>;
+  getUser: () => Express.User | undefined;
+  logout: () => void;
 }
