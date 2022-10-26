@@ -1,0 +1,43 @@
+type Query {
+  helloWorld: String!
+  currentUser: User
+  searchShows: [Show!]
+}
+
+type Mutation {
+  sessionLogin: SessionLoginResponse!
+  sessionLogout: String
+}
+
+interface MutationResponse {
+  code: Int!
+  message: String!
+  success: Boolean!
+}
+
+type SessionLoginResponse implements MutationResponse {
+  code: Int!
+  message: String!
+  success: Boolean!
+}
+
+type User {
+  provider: String!
+  providerId: ID!
+  id: ID!
+  firstName: String!
+  lastName: String!
+  displayName: String!
+  email: String!
+  photoUrl: String!
+  favoriteShows: [Show]!
+}
+
+type Show {
+  id: ID!
+  name: String!
+  type: String!
+  language: String!
+  genres: [String!]!
+  status: String!
+}

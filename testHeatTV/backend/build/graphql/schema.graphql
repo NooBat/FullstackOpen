@@ -1,0 +1,25 @@
+type Query {
+  helloWorld: String!
+  currentUser: User
+  searchShows: [Show!]
+}
+
+type User {
+  provider: String!
+  providerId: ID!
+  id: ID!
+  firstName: String!
+  lastName: String!
+  displayName: String!
+  email: String!
+  photoUrl: String!
+}
+
+type Show {
+  id: ID!
+  name: String!
+  type: String!
+  language: String!
+  genres: [String!]!
+  status: String!
+}
