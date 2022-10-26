@@ -1,0 +1,112 @@
+{
+  "env": {
+    "browser": true,
+    "es6": true
+  },
+  "extends": [
+    "airbnb",
+    "airbnb-typescript",
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:import/recommended",
+    "plugin:import/typescript",
+    "plugin:react/recommended",
+    "prettier"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+  "plugins": [
+    "@typescript-eslint",
+    "import",
+    "react"
+  ],
+  "rules": {
+    "@typescript-eslint/explicit-function-return-type": 0,
+    "@typescript-eslint/explicit-module-boundary-types": 0,
+    "@typescript-eslint/no-explicit-any": 1,
+    "@typescript-eslint/no-unsafe-member-access": 0,
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_"
+      }
+    ],
+    "@typescript-eslint/semi": [
+      "error"
+    ],
+    "import/order": [
+      "error",
+      {
+        "newlines-between": "always",
+        "groups": [
+          "builtin",
+          "external",
+          "internal",
+          "parent",
+          "sibling",
+          "index",
+          "object",
+          "type"
+        ],
+        "warnOnUnassignedImports": true
+      }
+    ],
+    "import/prefer-default-export": "off",
+    "jsx-quotes": [
+      "error",
+      "prefer-single"
+    ],
+    "no-case-declarations": 0,
+    "no-console": "off",
+    // [
+    //   "error",
+    //   {
+    //     "allow": ["warn", "error"]
+    //   }
+    // ],
+    "no-else-return": [
+      "error",
+      {
+        "allowElseIf": true
+      }
+    ],
+    "no-void": 0,
+    "quotes": [
+      "error",
+      "single",
+      {
+        "avoidEscape": true
+      }
+    ],
+    "react/function-component-definition": 0,
+    "react/jsx-props-no-spreading": 0,
+    "react/prop-types": 0,
+    "react/react-in-jsx-scope": 0,
+    "react/require-default-props": 0,
+    "sort-imports": [
+      "error",
+      {
+        "ignoreDeclarationSort": true
+      }
+    ]
+  },
+  "settings": {
+    "import/parsers": {
+      "@typescript-eslint/parser": [
+        ".ts",
+        ".tsx"
+      ]
+    },
+    "import/resolver": {
+      "typescript": {
+        "alwaysTryTypes": true
+      }
+    },
+    "react": {
+      "pragma": "React",
+      "version": "detect"
+    }
+  }
+}

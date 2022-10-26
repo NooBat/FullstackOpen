@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "module": "commonjs",
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "outDir": "./build/",
+    "resolveJsonModule": true,
+    "strict": true,
+    "target": "ES6",
+    "typeRoots": [
+      "@types",
+      "./node_modules/@types"
+    ]
+  }
+}

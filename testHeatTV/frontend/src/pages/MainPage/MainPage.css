@@ -1,0 +1,37 @@
+.body{
+    margin-top: 1rem;
+}
+.MainPage{
+    /* height: 295px;
+    width: 210px; */
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+   
+}
+.loadingSkeleton{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+.Pagination{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.footer{
+    margin-bottom: 2rem;
+}
+#text{
+    margin: 0;
+}
+.leftPartUpper{
+    display: flex;
+    flex-direction: row;
+}
+.leftPartLower{
+    display: flex;
+    flex-direction: row;
+}
