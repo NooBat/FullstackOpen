@@ -39,8 +39,11 @@
   "main": "index.js",
   "name": "backend",
   "scripts": {
+    "build": "tsc && cp src/config/ServiceAccount.json build/config && cd build && cd ../ && cp src/graphql/schema.graphql build/graphql",
+    "deploy": "git add . && git commit -m Heroku && git push heroku main",
+    "deploy:full": "npm run build && npm run deploy",
     "dev": "NODE_ENV=development ts-node-dev src/index.ts",
-    "start": "tsc && cp src/config/ServiceAccount.json build/config && cd build && mkdir graphql && cd ../ && cp src/graphql/schema.graphql build/graphql && NODE_ENV=production node build/index.js",
+    "start": "NODE_ENV=production node build/index.js",
     "tsc": "tsc"
   },
   "version": "1.0.0"

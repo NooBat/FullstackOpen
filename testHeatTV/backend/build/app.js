@@ -12,7 +12,10 @@ const config_1 = __importDefault(require("./env/config"));
 const loginRouter_1 = __importDefault(require("./routers/loginRouter"));
 const app = (0, express_1.default)();
 app.use('/', (0, cors_1.default)({
-    origin: ['https://studio.apollographql.com', 'http://localhost:3000'],
+    origin: [
+        'https://studio.apollographql.com',
+        'http://localhost:3000, https://transcendent-croquembouche-d4a213.netlify.app/',
+    ],
     credentials: true,
 }));
 app.use(express_1.default.json());

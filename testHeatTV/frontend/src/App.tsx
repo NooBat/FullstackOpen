@@ -57,7 +57,7 @@ const App = () => {
       const token = await userCred.user.getIdToken();
       await axios.post<void>(
         process.env.NODE_ENV === 'production'
-          ? 'https://majestic-tiramisu-a800ab.netlify.app/'
+          ? 'https://pacific-caverns-31987.herokuapp.com/'
           : 'http://localhost:4000/login',
         { token }
       );
