@@ -14,7 +14,7 @@ import './index.css';
 const link = new HttpLink({
   uri:
     process.env.NODE_ENV === 'production'
-      ? 'https://majestic-tiramisu-a800ab.netlify.app/'
+      ? 'https://pacific-caverns-31987.herokuapp.com/'
       : 'http://localhost:4000/login',
   credentials: 'include',
 });
