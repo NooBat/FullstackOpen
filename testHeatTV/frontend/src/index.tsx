@@ -12,10 +12,7 @@ import App from './App';
 import './index.css';
 
 const link = new HttpLink({
-  uri:
-    process.env.NODE_ENV === 'production'
-      ? 'https://pacific-caverns-31987.herokuapp.com/'
-      : 'http://localhost:4000/login',
+  uri: 'http://localhost:4000',
   credentials: 'include',
 });
 

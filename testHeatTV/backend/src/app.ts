@@ -9,6 +9,7 @@ import loginRouter from './routers/loginRouter';
 
 const app = express();
 
+app.set('trust proxy', true);
 app.use(
   '/',
   cors<cors.CorsRequest>({
