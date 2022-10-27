@@ -7,11 +7,12 @@ import {
 } from 'firebase/auth';
 import { useEffect } from 'react';
 import axios from 'axios';
-import { gql, useApolloClient, useLazyQuery } from '@apollo/client';
+import { gql, useLazyQuery, useMutation } from '@apollo/client';
 
 import { NavBar } from './components/NavBar'; // header
 // import { MainPage } from './pages/MainPage/MainPage';
 import { isString } from './utils/typesCheck';
+import { User } from './types';
 // in pages
 
 const GET_USER = gql`
@@ -23,26 +24,66 @@ const GET_USER = gql`
       displayName
       email
       photoUrl
+      favoriteShows {
+        id
+      }
+      favoritePeople {
+        id
+      }
+    }
+  }
+`;
+
+const UPDATE_USER = gql`
+  mutation updateUser($personId: Int, $showId: Int) {
+    updateUser(personId: $personId, showId: $showId) {
+      code
+      message
+      success
+      user {
+        provider
+        providerId
+        id
+        displayName
+        email
+        photoUrl
+        favoriteShows {
+          id
+        }
+        favoritePeople {
+          id
+        }
+      }
     }
   }
 `;
 
 const App = () => {
-  const [getUser] = useLazyQuery(GET_USER, {
+  const [getUser, { data }] = useLazyQuery<User>(GET_USER, {
     onCompleted: (res) => {
-      console.log(res, 'on complete');
+      console.log(res, 'getUser complete');
     },
   });
-  const client = useApolloClient();
-  setInterval(async () => {
-    await client.clearStore();
-    await getUser();
-  }, 10000);
+  const [updateUser, result] = useMutation(UPDATE_USER, {
+    onCompleted: (res) => {
+      console.log(
+        result,
+        'fetched result\n',
+        res,
+        'response in onCompleted',
+        data
+      );
+    },
+  });
 
   const auth = getAuth();
   useEffect(() => {
     if (!isString(process.env.REACT_APP_GOOGLE_CLIENT_ID)) {
       console.error('NO CLIENT_ID FOUND!');
+      return;
+    }
+
+    if (data?.currentUser) {
       return;
     }
 
@@ -52,15 +93,19 @@ const App = () => {
       const idToken = response.credential;
       const credential = GoogleAuthProvider.credential(idToken);
 
-      // Sign in with credential from the Google user.
       const userCred = await signInWithCredential(auth, credential);
       const token = await userCred.user.getIdToken();
-      await axios.post<void>('http://localhost:4000/login', { token });
+      await axios.post<void>(
+        'http://localhost:4000/login',
+        {
+          token,
+        },
+        { withCredentials: true }
+      );
       const button = document.getElementById('signInButton');
       if (button) {
         button.style.display = 'none';
       }
-      getUser();
     }
 
     google.accounts.id.initialize({
@@ -84,7 +129,7 @@ const App = () => {
         width: '50',
       }
     );
-  }, []);
+  }, [JSON.stringify(data)]);
 
   return (
     <BrowserRouter>
@@ -98,6 +143,17 @@ const App = () => {
       </div> */}
       <button id='signInButton' type='button'>
         Login
+      </button>
+      <button
+        type='button'
+        onClick={() => {
+          updateUser({ variables: { personId: 1 } });
+        }}
+      >
+        add person
+      </button>
+      <button type='button' onClick={() => getUser()}>
+        get user
       </button>
     </BrowserRouter>
   );
