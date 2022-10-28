@@ -72,6 +72,7 @@
         "allowElseIf": true
       }
     ],
+    "no-underscore-dangle": 0,
     "no-void": 0,
     "quotes": [
       "error",

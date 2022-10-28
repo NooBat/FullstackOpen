@@ -6,6 +6,7 @@ import {
   HttpLink,
   InMemoryCache,
 } from '@apollo/client';
+import { CookiesProvider } from 'react-cookie';
 
 import './config/firebase-config';
 import App from './App';
@@ -26,8 +27,10 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <ApolloProvider client={client}>
-      <App />
-    </ApolloProvider>
+    <CookiesProvider>
+      <ApolloProvider client={client}>
+        <App />
+      </ApolloProvider>
+    </CookiesProvider>
   </React.StrictMode>
 );

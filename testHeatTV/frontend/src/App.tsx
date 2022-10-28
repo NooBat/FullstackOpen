@@ -8,12 +8,15 @@ import {
 import { useEffect } from 'react';
 import axios from 'axios';
 import { gql, useLazyQuery, useMutation } from '@apollo/client';
+// import { useCookies } from 'react-cookie';
 
 import { NavBar } from './components/NavBar'; // header
 // import { MainPage } from './pages/MainPage/MainPage';
 import { isString } from './utils/typesCheck';
 import { User } from './types';
 // in pages
+
+axios.defaults.withCredentials = true;
 
 const GET_USER = gql`
   query getUser {
@@ -58,21 +61,30 @@ const UPDATE_USER = gql`
   }
 `;
 
+interface CookieResponse {
+  sessionID: string;
+  cookie: {
+    path: string;
+    _expires: Date | null;
+    originalMaxAge: number | null;
+    httpOnly: boolean;
+    secure: boolean;
+    sameSite: 'none';
+  };
+}
+
 const App = () => {
+  // const [, setCookie] = useCookies(['connect.sid']);
+
   const [getUser, { data }] = useLazyQuery<User>(GET_USER, {
     onCompleted: (res) => {
       console.log(res, 'getUser complete');
     },
   });
-  const [updateUser, result] = useMutation(UPDATE_USER, {
+
+  const [updateUser] = useMutation(UPDATE_USER, {
     onCompleted: (res) => {
-      console.log(
-        result,
-        'fetched result\n',
-        res,
-        'response in onCompleted',
-        data
-      );
+      console.log(res, 'response in onCompleted', data);
     },
   });
 
@@ -95,13 +107,24 @@ const App = () => {
 
       const userCred = await signInWithCredential(auth, credential);
       const token = await userCred.user.getIdToken();
-      await axios.post<void>(
+      await axios.post<CookieResponse>(
         'http://localhost:4000/login',
         {
           token,
         },
         { withCredentials: true }
       );
+
+      // setCookie('connect.sid', res.data.sessionID, {
+      //   path: res.data.cookie.path,
+      //   expires: res.data.cookie._expires
+      //     ? res.data.cookie._expires
+      //     : undefined,
+      //   httpOnly: res.data.cookie.httpOnly,
+      //   secure: res.data.cookie.secure,
+      //   sameSite: res.data.cookie.sameSite,
+      // });
+
       const button = document.getElementById('signInButton');
       if (button) {
         button.style.display = 'none';
